@@ -1,0 +1,747 @@
+﻿
+@{
+    ViewData["Title"] = "客户";
+}
+
+
+
+<div class="box box-success ">
+    <div class="box-header with-border">
+        <i class="fa fa-users  text-success"></i>
+        <h3 class="box-title">客户</h3>
+    </div><!-- /.box-header -->
+    <div class="box-body">
+        <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="#tab_1" data-toggle="tab" aria-expanded="true">所有客户</a></li>
+                <li class=""><a href="#tab_2" data-toggle="tab" aria-expanded="false">新增客户</a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="tab_1">
+                    <div class="box box-default">
+                        <!-- 查询栏 -->
+                        <div class="row" style="margin-top:5px">
+                            <div class="col-md-2 form-inline" id="EmployeeDiv">
+                                <label>员工</label>
+                                <select class="form-control" id="EmployeeIDByFind" name="EmployeeIDByFind" style="width:200px">
+                                </select>
+                            </div>
+
+                            <div class="col-md-2 form-inline">
+                                <label>类别</label>
+                                <select class="form-control" id="CustomerSegmentationIDByFind" name="CustomerSegmentationIDByFind" style="width:200px">
+                                </select>
+                            </div>
+
+                            <div class="col-md-2 form-inline">
+                                <label>客户名称</label>
+                                <input type="text" class="form-control" id="CustomerNameByFind" value="" placeholder="请输入客户名称..." />
+                            </div>
+
+                            <div class="col-md-2 form-inline">
+                                <label>开始时间</label>
+                                <input type="text" class="form-control" id="StartTimeByFind" value="" placeholder="请输入开始时间..." />
+                            </div>
+                            <div class="col-md-2 form-inline">
+                                <label>结束时间</label>
+                                <input type="text" class="form-control" id="EndTimeByFind" value="" placeholder="请输入结束时间..." />
+                            </div>
+                            <div class="col-md-1 form-inline">
+
+                                <button class="btn btn-default" style="margin-top:24px" onclick="FindToCustomers()">立即查询</button>
+                            </div>
+
+                        </div>  <!-- 查询栏 -->
+                        <table id="NoRealCustomer" lay-filter="table"></table>
+                    </div>
+                </div>
+                <div class="tab-pane" id="tab_2">
+                    <!-- 新建 -->
+                    <div class="box box-default">
+
+                        <!-- form start -->
+                        <div >
+                            <div class="box-body">
+                                <div class="row">
+                                    <div class="col-md-4 ">
+
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">选择潜在客户</label>
+                                            <select class="form-control" id="NoRealCustomerSelect" onchange="GetCustomerDetal(this.value)" name="NoRealCustomerSelect">
+                                            </select>
+                                            <label for="exampleInputEmail1">客户名称</label>
+                                            <input type="text" class="form-control" id="Name" name="Name"  >
+
+                                        </div>
+
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="exampleInputPassword1">联系地址</label>
+                                            <input type="text" class="form-control" id="Address" name="Address"  disabled>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">电话号码</label>
+                                            <input type="text" class="form-control" id="Phone" name="Phone" disabled >
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="row  ">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">邮箱</label>
+                                            <input type="text" class="form-control" id="Email" name="Email" disabled >
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="exampleInputPassword1">别名</label>
+                                            <input type="text" class="form-control" id="Alias" name="Alias"  disabled >
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <img id="LogoImage" src="~/Img/logo.png" alt="选中的Logo" style="height:100px;margin-top:-48px" class="img-responsive" />
+                                    </div>
+                                </div>
+                                <div class="row box box-default" style="margin-top:10px">
+                                    <div class="col-md-8 table-responsive" id="TableDiv" style="margin-top:10px;height:270px;overflow:auto">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>商品编号</th>
+                                                    <th>商品标题</th>
+                                                    <th>商品单价</th>
+                                                    <th>商品数量</th>
+                                                    <th>总价</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="ProductTable">
+                                              
+                                            </tbody>
+                                        </table>
+                                        
+
+                                    </div>
+
+                                    <div class="col-md-4" style="margin-top:10px">
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">选择商品</label>
+                                            <select class="form-control" id="Product" onchange="GetProductDetail(this.value)">
+                                            </select>
+
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-md-3">
+                                                <label for="exampleInputPassword1">单价</label>
+                                                <input type="text" class="form-control" id="Price"   disabled>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label for="exampleInputPassword1">数量</label>
+                                                <input type="text" class="form-control" id="Number"  >
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="exampleInputPassword1">总价</label>
+                                                <input type="text" class="form-control" id="TotalPrice" disabled  >
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label for="exampleInputPassword1">操作</label>
+                                                <button class="btn btn-danger" onclick="Buy()">购买</button>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="exampleInputPassword1">总价</label>
+                                            <input type="text" class="form-control" id="AllTotalPrice"  disabled>
+                                        </div>
+
+                                    </div>
+                                  
+                                </div>
+
+                            </div><!-- /.box-body -->
+
+                            <div class="box-footer">
+                                <button type="button" onclick="PostCustomer()" class="btn btn-primary">提交</button>
+                            </div>
+                        </div>
+                    </div><!-- 新建 -->
+                </div>
+
+            </div>
+        </div>
+
+
+
+    </div><!-- /.box-body -->
+</div>
+
+
+<script type="text/html" id="toolbar">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-primary layui-btn-sm" lay-event="addLinkMan" title="添加联系人"><i class="layui-icon layui-icon-user"></i></button>
+        <button class="layui-btn layui-btn-primary layui-btn-sm" lay-event="visit" title="客户拜访"><i class="layui-icon layui-icon-dialogue"></i></button>
+
+        <button class="layui-btn  layui-btn-primary layui-btn-sm" lay-event="delete" title="删除"><i class="layui-icon layui-icon-delete"></i></button>
+        <button class="layui-btn layui-btn-primary layui-btn-sm" lay-event="update" title="修改"><i class="layui-icon layui-icon-edit"></i></button>
+
+    </div>
+</script>
+
+<script type="text/html" id="ImageTemplet">
+    <img src="{{d.image}}" alt="{{d.name}}" />
+
+</script>
+
+
+<script type="text/html" id="CustomerSegmentationNameTemplet">
+    {{# if(d.customerSegmentationID==1) { }}
+    <strong style="color: #f56954">{{d.customerSegmentationName}}</strong>
+    {{# } else if (d.customerSegmentationID==2) { }}
+    <strong style="color: #f39c12">{{d.customerSegmentationName}}</strong>
+
+    {{# } else if (d.customerSegmentationID==3) { }}
+    <strong style="color: #00a65a">{{d.customerSegmentationName}}</strong>
+
+    {{# } else { }}
+    <strong style="color: #001F3F">{{d.customerSegmentationName}}</strong>
+
+    {{# } }}
+
+
+
+</script>
+
+@section Scripts{
+
+
+    <script>
+        //——————————————————文本框查询，客户反填——————————————————————————————————————
+
+        var customerArr = [];  //客户数组
+
+        //初始化员工下拉框
+        $(function () {
+
+            GetCustomerSelect("");
+        })
+
+        //下拉框改变事件
+        function GetCustomerDetal(value) {
+            for (var i = 0; i < customerArr.length; i++) {
+                if (customerArr[i].id == value) {
+                    $("#Name").val(customerArr[i].name);
+                    $("#Address").val(customerArr[i].address);
+                    $("#Phone").val(customerArr[i].phone);
+                    $("#Email").val(customerArr[i].email);
+                    $("#Alias").val(customerArr[i].alias);
+
+                    $("#LogoImage").attr("src", customerArr[i].image);
+
+                }
+            }
+        }
+
+
+
+        //文本框键盘按起事件
+        $("#Name").keyup(function () {
+            var name = $("#Name").val();
+            GetCustomerSelect(name);
+
+        })
+
+        //获取员工下拉框封装
+        function GetCustomerSelect(name) {
+
+
+            var token = $.cookie("token");
+
+            //员工下拉框
+            $.ajax({
+                url: baseUrl + '/api/customers/norealCustomers?name=' + name,
+                type: 'get',
+                contentType: "application/json",
+                headers: { "Authorization": "Bearer " + token },
+                success: function (res) {
+                    customerArr = res;
+
+                    $("#NoRealCustomerSelect").empty();
+
+                    $(res).each(function () {
+                        var line = '<option value="' + this.id + '">' + this.name + '</option>';
+                        $("#NoRealCustomerSelect").append(line);
+                    });
+
+                }
+
+            }).fail(function () {
+                layer.close(index);
+            }) //员工下拉框
+
+        }
+
+
+    </script>
+
+    <script>
+
+        //——————————————————商品相关操作——————————————————————————————————————
+
+        var productArr = []; //商品数组
+
+        var tableProductArr = [];
+
+        //自动计算价格事件
+        $("#Number").keyup(function () {
+            var price = $("#Price").val();
+            var number = $("#Number").val();
+
+            var res = parseFloat(price) * parseFloat(number);
+
+            $("#TotalPrice").val(res);
+        });
+
+
+        //初始化加载商品
+        $(function () {
+
+            var token = $.cookie("token");
+
+            //商品下拉框
+            $.ajax({
+                url: baseUrl + '/api/products',
+                type: 'get',
+                contentType: "application/json",
+                headers: { "Authorization": "Bearer " + token },
+                success: function (res) {
+
+                    productArr = res;
+
+                    $("#Product").empty();
+                    $("#Product").append('<option value="0">请选择</option>');
+
+                    $(res).each(function () {
+                        var line = '<option value="' + this.id + '">' + this.title + '</option>';
+                        $("#Product").append(line);
+                    });
+
+                }
+
+            }).fail(function () {
+            }) //商品下拉框
+
+        });
+
+
+        //下拉框改变事件单价反填
+        function GetProductDetail(value) {
+            $("#Price").val(0);
+            $("#Number").val(0);
+
+
+            $("#TotalPrice").val(0);
+
+
+
+            for (var i = 0; i < productArr.length; i++) {
+                if (productArr[i].id == value) {
+
+                    $("#Price").val(productArr[i].price);
+
+                }
+            }
+
+        }
+
+        //点击购买事件
+        function Buy() {
+
+            var productObj = {};
+            productObj.id = parseInt($("#Product").val()); //商品ID
+
+            productObj.price = parseFloat($("#Price").val());  //单价
+
+            productObj.number = parseInt($("#Number").val()); //数量
+
+            productObj.totalPrice = parseFloat($("#TotalPrice").val());//总价
+
+            productObj.title = "";  //表特
+            for (var i = 0; i < productArr.length; i++) {
+                if (productArr[i].id == productObj.id) {
+                    productObj.title = productArr[i].title;
+                }
+            }
+
+            tableProductArr.push(productObj);  //往表格的数据加数据
+
+            var price = 0;
+
+            $("#ProductTable").empty();   //表格渲染
+            $(tableProductArr).each(function () {
+
+                var line = '<tr>'
+                    + '<td>' + this.id + '</td>'
+                    + '<td>' + this.title + '</td>'
+                    + '<td>' + this.price + '</td>'
+                    + '<td>' + this.number + '</td>'
+                    + '<td>' + this.totalPrice + '</td>'
+                    + '</tr>';
+                $("#ProductTable").append(line);
+                price = parseFloat(price) + parseFloat(this.totalPrice);
+            });
+
+            var div = document.getElementById('TableDiv');
+            div.scrollTop = div.scrollHeight;
+
+
+            $("#AllTotalPrice").val(price);  //全部总价格
+
+
+            $("#Number").val(0);
+            $("#TotalPrice").val(0);
+        }
+
+    </script>
+
+
+    <script>
+
+
+
+
+//——————————————————新增订单操作——————————————————————————————————————
+        function PostCustomer() {
+            var customerID = $("#NoRealCustomerSelect").val(); //客户ID
+            var totalPrice =   $("#AllTotalPrice").val();  //全部总价格
+
+            var orderProducts = tableProductArr;
+
+
+            var token = $.cookie("token");
+
+            //新增订单
+            $.ajax({
+                url: baseUrl + '/api/orders',
+                type: 'post',
+                contentType: "application/json",
+                data: JSON.stringify({ orderCreateDto: { CustomerID: parseInt(customerID), TotalPrice: parseFloat(totalPrice) }, ProductsCreateDtos: orderProducts }),
+                headers: { "Authorization": "Bearer " + token },
+                success: function (res) {
+
+
+                    layer.msg("新增订单成功！", { icon: 1 }, function () {   //添加成功后的相关操作
+
+                        layer.confirm("需要清空文本内容吗？", { icon: 3 }, function (index) {
+
+                            location.href = "/Home/Customer";
+                            layer.close(index);
+                        });
+
+
+                        //表格重载
+                        layui.use(['table'], function () {
+                            var table = layui.table; //where可以传我们像传的任何参数
+                            table.reload("NoRealCustomer", {
+                                url: baseUrl + '/api/customers/noreal?status=1', where: {
+                                    headers: { "Authorization": "Bearer " + token }
+                                }
+                            });
+                        });
+
+
+                    });//添加成功后的相关操作
+                }
+
+            }).fail(function () {
+            }) //新增订单
+         }
+
+
+
+
+
+        //——————————————————查询，layui表格重载——————————————————————————————————————
+        function FindToCustomers() {
+            var employeeIDByFind = $("#EmployeeIDByFind").val();
+            var customerSegmentationIDByFind = $("#CustomerSegmentationIDByFind").val();
+            var customerNameByFind = $("#CustomerNameByFind").val();
+            var startTimeByFind = $("#StartTimeByFind").val();
+            var endTimeByFind = $("#EndTimeByFind").val();
+
+
+            var token = $.cookie("token");
+            //表格重载
+            layui.use(['table'], function () {
+                var table = layui.table; //where可以传我们像传的任何参数
+                table.reload("NoRealCustomer", {
+                    url: baseUrl + '/api/customers/noreal?employeeIDByFind=' + employeeIDByFind + '&customerSegmentationIDByFind=' + customerSegmentationIDByFind
+                        + '&customerNameByFind=' + customerNameByFind + '&startTimeByFind=' + startTimeByFind + '&endTimeByFind=' + endTimeByFind + '&status=1', where: {
+                            headers: { "Authorization": "Bearer " + token }
+                        }
+                });
+            });
+        }
+    </script>
+
+
+    <script>
+        //——————————————————Layui表格渲染——————————————————————————————————————
+
+        layui.use(['table', 'form', 'laydate'], function () {
+            var token = $.cookie("token");
+            var laydate = layui.laydate;
+
+            var table = layui.table;
+            var form = layui.form;
+
+            laydate.render({
+                elem: "#StartTimeByFind",
+                type: "datetime"
+            })
+
+            laydate.render({
+                elem: "#EndTimeByFind",
+                type: "datetime"
+            })
+
+
+            //表格渲染
+            table.render({
+                elem: '#NoRealCustomer'
+                , url: baseUrl + '/api/customers/noreal?status=1'  //数据接口
+                , headers: { "Authorization": "Bearer " + token }
+                , cols: [[ //表头
+                    { type: "checkbox" }
+                    , { field: 'id', title: '编号', width: 80 }
+                    , { field: 'name', title: '客户名称' }
+                    , { field: 'phone', title: '联系电话' }
+                    , { field: 'email', title: '联系邮箱' }
+                    , { field: 'address', title: '联系地址' }
+                    , { field: 'alias', title: '客户别名' }
+                    , { field: 'customerSegmentationID', title: '细分类别ID', hide: true }
+                    , { field: 'customerSegmentationName', title: '细分类别名称', templet: "#CustomerSegmentationNameTemplet" }
+                    , { field: 'remark', title: '备注' }
+                    , { field: 'employeesID', title: '员工ID', hide: true }
+                    , { field: 'isReal', title: '是否潜在客户', hide: true }
+                    , { field: 'isDel', title: '是否删除', hide: true }
+                    , { field: 'image', title: '客户Logo', templet: "#ImageTemplet" }
+                    , { field: 'createTime', title: '创建时间' }
+                ]]
+                , page: true
+                , toolbar: "#toolbar"
+                , defaultToolbar: ['filter', 'exports']
+            });
+
+
+            //监听事件
+            table.on('toolbar(table)', function (obj) {
+                var checkStatus = table.checkStatus("NoRealCustomer"); //获取表格选中的行
+                var data = checkStatus.data;//获取选中数据
+                ;
+                switch (obj.event) {
+                    case 'addLinkMan':
+                        layer.msg('添加联系人');
+                        break;
+                    case 'delete':  //删除
+                        if (true) {
+                            //拿到选中的所有id
+                            var idsarr = [];
+                            for (var i = 0; i < data.length; i++) {
+                                idsarr.push(data[i].id);
+                            }
+                            if (idsarr.length == 0) {
+                                layer.msg("请至少选中一个！", { icon: 2 });
+                                return;
+                            }
+
+                            //ajax事件
+                            layer.confirm("确定要删除嘛？", { icon: 3 }, function (index2) {
+                                var index = layer.load();
+                                var token = $.cookie("token");
+                                //删除ajax
+                                $.ajax({
+                                    url: baseUrl + '/api/customers/delete?ids=' + idsarr.toString(),
+                                    type: 'delete',
+                                    contentType: "application/json",
+                                    headers: { "Authorization": "Bearer " + token },
+                                    success: function (res) {
+                                        layer.close(index);
+
+                                        layer.msg("删除成功！共删除了" + res + "条数据！", { icon: 1 }, function () {
+                                            //表格重载
+                                            layui.use(['table'], function () {
+                                                var table = layui.table; //where可以传我们像传的任何参数
+                                                table.reload("NoRealCustomer", {
+                                                    url: baseUrl + '/api/customers/noreal?status=1', where: {
+                                                        headers: { "Authorization": "Bearer " + token }
+                                                    }
+                                                });
+                                            });
+                                        });
+
+                                    }
+
+                                }).fail(function () {
+                                    layer.close(index);
+                                })//类别下拉框
+
+                                layer.close(index2);
+                            });
+
+
+                        }
+                        break;
+                    case 'update':  //修改
+                        if (true) {
+                            //拿到选中的所有id
+                            var idsarr = [];
+                            for (var i = 0; i < data.length; i++) {
+                                idsarr.push(data[i].id);
+                            }
+                            if (idsarr.length == 0) {
+                                layer.msg("请至少选中一个！", { icon: 2 });
+                                return;
+                            }
+                            if (idsarr.length > 1) {
+                                layer.msg("只能选中一个修改！", { icon: 2 });
+                                return;
+                            }
+                            layer.msg(idsarr.toString(0));
+
+                            layer.open({
+                                type: 2,
+                                title: '客户修改',
+                                shadeClose: true,
+                                shade: false,
+                                maxmin: true, //开启最大化最小化按钮
+                                area: ['893px', '600px'],
+                                content: '/Home/CustomerEdit?customerId=' + idsarr.toString(),
+                                end: function () {
+                                    //表格重载
+                                    layui.use(['table'], function () {
+                                        var table = layui.table; //where可以传我们像传的任何参数
+                                        table.reload("NoRealCustomer", {
+                                            url: baseUrl + '/api/customers/noreal?status=1', where: {
+                                                headers: { "Authorization": "Bearer " + token }
+                                            }
+                                        });
+                                    });
+
+                                }
+                            });
+
+
+                        }
+                        break;
+                    case 'visit':
+                        layer.msg('客户拜访');
+                        break;
+                };
+            });
+
+        });
+    </script>
+
+
+
+    <script>
+
+       
+        //——————————————————下拉框(员工下拉框,类别下拉框)——————————————————————————————————————
+
+        //下拉框
+        $(function () {
+            var index = layer.load();
+            var token = $.cookie("token");
+            //类别下拉框
+            $.ajax({
+                url: baseUrl + '/api/customers/cate',
+                type: 'get',
+                contentType: "application/json",
+                headers: { "Authorization": "Bearer " + token },
+                success: function (res) {
+                    layer.close(index);
+                    $("#CustomerSegmentationID").empty();
+                    $("#CustomerSegmentationID").append('<option value="0">请选择</option>');
+
+
+                    $("#CustomerSegmentationIDByFind").empty();  //查询那的下拉框
+                    $("#CustomerSegmentationIDByFind").append('<option value="0">全部</option>');
+
+
+                    $(res).each(function () {
+                        var line = '<option value="' + this.id + '">' + this.name + '</option>';
+                        $("#CustomerSegmentationID").append(line);
+
+
+                        $("#CustomerSegmentationIDByFind").append(line);//查询那的下拉框
+                    });
+
+
+
+                }
+
+            }).fail(function () {
+                layer.close(index);
+            })//类别下拉框
+
+
+            //员工下拉框
+            $.ajax({
+                url: baseUrl + '/api/customers/childEmp',
+                type: 'get',
+                contentType: "application/json",
+                headers: { "Authorization": "Bearer " + token },
+                success: function (res) {
+                    layer.close(index);
+                    console.log(res);
+                    if (res.code == 0) {
+                        $("#EmployeeIDByFind").empty();
+                        $("#EmployeeIDByFind").append('<option value="0">全部</option>');
+
+                        $(res.data).each(function () {
+                            var line = '<option value="' + this.id + '">' + this.name + '</option>';
+                            $("#EmployeeIDByFind").append(line);
+                        });
+                    } else {
+                        $("#EmployeeDiv").remove();  //权限不足，删除盒子
+                    }
+                }
+
+            }).fail(function () {
+                layer.close(index);
+            }) //员工下拉框
+
+        })
+
+
+
+        //—————————————图片改变事件———————————————————————————————————————————
+
+
+
+        $("#UploadFile").change(function () {
+            var reader = new FileReader();//创建一个读流
+
+            var file = $("#UploadFile")[0].files[0];//获取选中文件
+
+            reader.readAsDataURL(file);//读文件
+
+
+            reader.onload = function (e) {//读事件
+                $("#LogoImage").attr('src', e.target.result);
+                //$("#UserImg").attr('src', e.target.result)
+
+            };
+
+        });
+    </script>
+
+}

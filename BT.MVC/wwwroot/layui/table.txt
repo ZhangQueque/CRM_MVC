@@ -1,0 +1,17 @@
+ table.render({
+        elem: '#demo'
+        , height: 312
+        , url: 'https://localhost:44311/api/exams' //数据接口
+        , page: true //开启分页
+        , limit: 5
+        , cols: [[ //表头
+            { field: 'id', title: 'ID', sort: true, }
+            , { field: 'area', title: '区域' }
+            , { field: 'houseNumber', title: '门牌号' }
+            , { field: 'account', title: '账号' }
+            , { field: 'password', title: '密码' }
+            , { field: 'phoneNumber', title: '电话号' }
+            , { field: 'idCard', title: '身份证' }
+
+        ]]
+    });

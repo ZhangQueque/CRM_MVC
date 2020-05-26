@@ -1,0 +1,207 @@
+﻿
+@{
+    ViewData["Title"] = "Permission";
+}
+
+<div class="box box-default ">
+    <div class="box-header with-border">
+        <i class="fa fa-unlock  text-dark"></i>
+        <h3 class="box-title">权限管理</h3>
+    </div><!-- /.box-header -->
+    <div class="box-body">
+        <div class="row">
+            <div class="col-md-6 form-inline">
+                <label>角色：</label>
+                <select class="form-control" id="RoleID" name="RoleID" style="width:200px">
+                </select>
+            </div>
+            <div class="col-md-6">
+                <button class="btn btn-danger " id="SaceBtn">保存</button>
+            </div>
+
+        </div>
+        <div class="row  " style="margin-top:16px">
+            <table id="demoTreeTb"></table>
+
+        </div>
+    </div><!-- /.box-body -->
+</div>
+
+<!-- 表格操作列 -->
+<script type="text/html" id="tbBar">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="add">添加</a>
+    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="edit">修改</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+
+@section Scripts{
+ 
+
+    <script>
+        layui.config({
+            base: 'https://localhost:44347/'
+        }).use(['layer', 'util', 'treeTable'], function () {
+            var $ = layui.jquery;
+            var layer = layui.layer;
+            var util = layui.util;
+            var treeTable = layui.treeTable;
+            $('body').removeClass('layui-hide');
+
+            // 渲染表格
+            var insTb = treeTable.render({
+                elem: '#demoTreeTb',
+                url: baseUrl + '/api/permissions/0',
+                toolbar: 'default',
+                height: 'full-200',
+                tree: {
+                    iconIndex: 2,
+                    isPidData: true,
+                    idName: 'id',  //主键
+                    pidName: 'pid' //父id
+                },
+                defaultToolbar: ['filter', 'exports'
+                ],
+                cols: [
+                    [
+                        { type: 'numbers' },
+                        { type: 'checkbox' },
+                        { field: 'name', title: '菜单名称' },
+                        { field: 'url', title: '菜单地址' },
+                        { field: 'createTime', title: '创建时间' },
+                        { align: 'center', toolbar: '#tbBar', title: '操作' }
+                    ]
+                ],
+                style: 'margin-top:0;'
+            });
+
+            // 工具列点击事件
+            treeTable.on('tool(demoTreeTb)', function (obj) {
+                switch (obj.event) {
+                    case 'add':
+                        layer.msg('添加');
+                        break;
+                    case 'edit':
+                        layer.msg('编辑');
+
+                        break;
+                    case 'del':
+                        layer.msg('删除');
+                        break;
+                }
+            });
+
+            // 头部工具栏点击事件
+            treeTable.on('toolbar(demoTreeTb)', function (obj) {
+                switch (obj.event) {
+                    case 'add':
+                        layer.msg('添加');
+                        break;
+                    case 'delete':
+                        layer.msg('删除');
+                        break;
+                    case 'update':
+                        layer.msg('编辑');
+                        break;
+                 
+                }
+            });
+
+
+         
+            $("#RoleID").change(function () {
+                var value = $("#RoleID").val();
+                //重载
+                insTb.reload({ url: baseUrl + '/api/permissions/' + value });
+            })
+
+            //保存按钮事件
+            $("#SaceBtn").click(function () {
+                var value = $("#RoleID").val();
+                if (value==0) {
+                    layer.msg("请选择要分配的角色！", { icon: 2 });
+                    return;
+                }
+
+
+                //获取选中数据
+                var data = insTb.checkStatus();
+                //拿到选中的所有id
+                var idsarr = [];
+                for (var i = 0; i < data.length; i++) {
+                    idsarr.push(data[i].id);
+                }
+                if (idsarr.length == 0) {
+                    layer.msg("请至少选中一个！", { icon: 2 });
+                    return;
+                }
+
+                //ajax事件
+                layer.confirm("确定要修改权限嘛？", { icon: 3 }, function (index2) {
+                    var index = layer.load();
+                    var token = $.cookie("token");
+                    //删除ajax
+                    $.ajax({
+                        url: baseUrl + '/api/permissions/edit/' + value +'?permissionIDs=' + idsarr.toString(),
+                        type: 'get',
+                        contentType: "application/json",
+                        headers: { "Authorization": "Bearer " + token },
+                        success: function (res) {
+                            layer.close(index);
+                            if (res.code == 0) {
+                                layer.msg(res.msg,{ icon: 1 }, function () {
+                                    //表格重载
+                                    insTb.reload({ url: baseUrl + '/api/permissions/' + value });
+                                })
+                            } else {
+                                layer.msg(res.msg,{ icon: 2 } )
+                            }
+                        }
+
+                    }).fail(function () {
+                        layer.close(index);
+                    })//类别下拉框
+
+                    layer.close(index2);
+                });
+
+
+
+
+ 
+            })
+        });
+    
+
+    </script>
+
+
+    <script>
+        var token = $.cookie("token");
+        $(function () {
+            var index = layer.load();
+            //员工下拉框
+            $.ajax({
+                url: baseUrl + '/api/roles',
+                type: 'get',
+                contentType: "application/json",
+                headers: { "Authorization": "Bearer " + token },
+                success: function (res) {
+
+                    layer.close(index);
+                    $("#RoleID").empty();
+                    $("#RoleID").append('<option value="0">全部</option>');
+                    $(res).each(function () {
+                        var line = '<option value="' + this.id + '">' + this.name + '</option>';
+                        $("#RoleID").append(line);
+                    });
+
+                }
+
+            }).fail(function () {
+                layer.close(index);
+            }) //员工下拉框
+        });
+    </script>
+
+}

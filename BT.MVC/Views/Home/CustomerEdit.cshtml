@@ -1,0 +1,225 @@
+﻿
+@{
+    ViewData["Title"] = "修改客户";
+}
+@model Customers
+<!-- 新建 -->
+<div class="box box-warning">
+    <div class="box-header with-border">
+        <i class="fa fa-users  text-warning"></i>
+        <h3 class="box-title">修改客户</h3>
+    </div><!-- /.box-header -->
+    <!-- form start -->
+    <form id="EditCustomerFrom">
+        <div class="box-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">客户名称</label>
+                        <input type="text" class="form-control" id="Name" value="@Model.Name" name="Name" placeholder="请输入客户名称...">
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">联系地址</label>
+                        <input type="text" class="form-control" id="Address" value="@Model.Address" name="Address" placeholder="请输入客户联系地址...">
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">电话号码</label>
+                        <input type="text" class="form-control" id="Phone" value="@Model.Phone" name="Phone" placeholder="请输入客户电话号码...">
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">邮箱</label>
+                        <input type="text" class="form-control" id="Email" value="@Model.Email" name="Email" placeholder="请输入客户邮箱...">
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">别名</label>
+                        <input type="text" class="form-control" id="Alias" name="Alias" value="@Model.Alias" placeholder="请输入客户别名...">
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">是否潜在</label>
+                        <select class="form-control" id="IsReal" name="IsReal">
+                            <option value="">请选择</option>
+                            <option value="0">潜在客户</option>
+                            <option value="1">真实客户</option>
+
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row">
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">客户细分</label>
+                        <select class="form-control" id="CustomerSegmentationID" name="CustomerSegmentationID">
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row">
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="exampleInputFile">客户Logo</label>
+                        <input type="file" id="UploadFile" name="UploadFile">
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <img id="LogoImage" src="@Model.Image" alt="选中的Logo" style="height:150px" class="img-responsive" />
+                </div>
+            </div>
+
+
+            <div class="row">
+
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label>备注</label>
+                        <textarea id="Remark" name="Remark" class="form-control" rows="3" placeholder="请输入相关备注（选填） ...">@Model.Remark</textarea>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /.box-body -->
+
+        <div class="box-footer">
+            <button type="button" onclick="PostCustomer()" class="btn btn-primary">提交</button>
+        </div>
+    </form>
+</div><!-- 新建 -->
+
+@section Scripts{
+
+
+
+
+
+    <script>
+
+
+        //——————————————————客户修改——————————————————————————————————————
+        //当你在iframe页面关闭自身时
+        var index4 = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+
+        //创建客户
+        function PostCustomer() {
+            var id = '@Model.ID';
+            //获取表单数据
+            var formdata = new FormData($("#EditCustomerFrom")[0]);
+            var index = layer.load();
+            var token = $.cookie("token");
+            //创建客户
+            $.ajax({
+                url: baseUrl + '/api/customers/edit?id='+id,
+                type: 'post',
+                contentType: false,
+                cache: false,
+                processData: false,
+                data: formdata,
+                headers: { "Authorization": "Bearer " + token },
+                success: function (res) {
+                    layer.close(index);
+                    layer.msg("修改成功！", { icon: 1 }, function () {
+
+                        layer.confirm("需要关闭界面吗？", { icon: 3 }, function (index2) {
+
+                            parent.layer.close(index4); //再执行关闭   
+
+                            layer.close(index2);
+                        });
+
+
+                       
+                    });
+                 
+                }
+
+            }).fail(function () {
+                layer.close(index);
+
+            })
+
+        } //创建客户
+
+
+
+
+
+
+        $(function () { //页面加载更改class
+            $("#LayoutBody").addClass("sidebar-collapse");
+            //sidebar-mini skin-black
+
+            $("#IsReal").val('@Model.IsReal');
+        })
+
+        var index = layer.load();
+        var token = $.cookie("token");
+        //类别下拉框
+        $.ajax({
+            url: baseUrl + '/api/customers/cate',
+            type: 'get',
+            contentType: "application/json",
+            headers: { "Authorization": "Bearer " + token },
+            success: function (res) {
+                layer.close(index);
+                $("#CustomerSegmentationID").empty();
+                $("#CustomerSegmentationID").append('<option value="0">请选择</option>');
+
+
+                $(res).each(function () {
+                    var line = '<option value="' + this.id + '">' + this.name + '</option>';
+                    $("#CustomerSegmentationID").append(line);
+
+                });
+                $("#CustomerSegmentationID").val('@Model.CustomerSegmentationID');
+
+            }
+
+        }).fail(function () {
+            layer.close(index);
+        })//类别下拉框
+
+        //—————————————图片改变事件———————————————————————————————————————————
+
+
+
+        $("#UploadFile").change(function () {
+            var reader = new FileReader();//创建一个读流
+
+            var file = $("#UploadFile")[0].files[0];//获取选中文件
+
+            reader.readAsDataURL(file);//读文件
+
+
+            reader.onload = function (e) {//读事件
+                $("#LogoImage").attr('src', e.target.result);
+                //$("#UserImg").attr('src', e.target.result)
+
+            };
+
+        });
+    </script>
+}

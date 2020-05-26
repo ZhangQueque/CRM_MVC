@@ -1,0 +1,13 @@
+<div class="Vidage" style=" background: #000000">
+        <div class="Vidage__image"></div>
+        <video id="VidageVideo" class="Vidage__video" preload="metadata" loop autoplay muted>
+            <source src="~/201606241742/shiguang.webm" type="video/webm">
+            <source src="~/201606241742/shiguang.MP4" type="video/mp4">
+        </video>
+        <div class="Vidage__backdrop"></div>
+    </div>
+
+
+ <script>
+        new Vidage('#VidageVideo');
+    </script>
