@@ -9,34 +9,57 @@
         <h3 class="box-title">权限管理</h3>
     </div><!-- /.box-header -->
     <div class="box-body">
-        <div class="row">
-            <div class="col-md-6 form-inline">
-                <label>角色：</label>
-                <select class="form-control" id="RoleID" name="RoleID" style="width:200px">
-                </select>
-            </div>
-            <div class="col-md-6">
-                <button class="btn btn-danger " id="SaceBtn">保存</button>
-            </div>
+        <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="#tab_1" data-toggle="tab" aria-expanded="true">权限分配</a></li>
+                <li class=""><a href="#tab_2" data-toggle="tab" aria-expanded="false">已删除权限</a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="tab_1">
+                    <div class="row">
+                        <div class="col-md-6 form-inline">
+                            <label>角色：</label>
+                            <select class="form-control" id="RoleID" name="RoleID" style="width:200px">
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <button class="btn btn-danger " id="SaceBtn">保存</button>
+                        </div>
 
-        </div>
-        <div class="row  " style="margin-top:16px">
-            <table id="demoTreeTb"></table>
+                    </div>
+                    <div class="row  " style="margin-top:16px">
+                        <table id="demoTreeTb"></table>
 
+                    </div>
+                </div>
+                <div class="tab-pane" id="tab_2">
+
+                </div>
+
+            </div>
         </div>
-    </div><!-- /.box-body -->
+
+    </div>
+
 </div>
 
 <!-- 表格操作列 -->
 <script type="text/html" id="tbBar">
-    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="add">添加</a>
-    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="edit">修改</a>
-    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="add" title="添加子级菜单"><i class="layui-icon layui-icon-add-1"></i></a>
+    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="edit" title="修改"><i class="layui-icon layui-icon-edit"></i></a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del" title="删除"><i class="layui-icon layui-icon-delete"></i></a>
 </script>
 
 
+<!-- 表格操作列 -->
+<script type="text/html" id="toolbar">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="add" title="添加一级菜单"><i class="layui-icon layui-icon-add-1"></i></a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del" title="批量删除"><i class="layui-icon layui-icon-delete"></i></a>
+
+</script>
+
 @section Scripts{
- 
+
 
     <script>
         layui.config({
@@ -52,7 +75,7 @@
             var insTb = treeTable.render({
                 elem: '#demoTreeTb',
                 url: baseUrl + '/api/permissions/0',
-                toolbar: 'default',
+                toolbar: '#toolbar',
                 height: 'full-200',
                 tree: {
                     iconIndex: 2,
@@ -79,14 +102,53 @@
             treeTable.on('tool(demoTreeTb)', function (obj) {
                 switch (obj.event) {
                     case 'add':
-                        layer.msg('添加');
+                        layer.open({
+                            type: 2,
+                            title: '新增权限',
+                            shadeClose: true,
+                            shade: false,
+                            maxmin: true, //开启最大化最小化按钮
+                            area: ['493px', '480px'],
+                            content: '/Home/AddPermission?permissionID=' + obj.data.id + '&permissionName=' + obj.data.name,
+                            end: function () {
+                                insTb.reload({ url: baseUrl + '/api/permissions/0' });
+
+                            }
+                        });
                         break;
                     case 'edit':
                         layer.msg('编辑');
-
+                        console.log(obj.data)
                         break;
                     case 'del':
-                        layer.msg('删除');
+
+                        //ajax事件
+                        layer.confirm("确定要删除嘛？", { icon: 3 }, function (index2) {
+                            var index = layer.load();
+                            var token = $.cookie("token");
+                            //删除ajax
+                            $.ajax({
+                                url: baseUrl + '/api/permissions/del?permissionIDs=' + obj.data.id,
+                                type: 'delete',
+                                contentType: "application/json",
+                                headers: { "Authorization": "Bearer " + token },
+                                success: function (res) {
+                                    layer.close(index);
+
+                                    layer.msg("删除成功！共删除了" + res + "条数据！", { icon: 1 }, function () {
+                                        //表格重载
+                                        insTb.reload({ url: baseUrl + '/api/permissions/0' });
+
+                                    });
+                                }
+
+                            }).fail(function () {
+                                layer.close(index);
+                            })//类别下拉框
+
+                            layer.close(index2);
+                        });
+
                         break;
                 }
             });
@@ -95,20 +157,65 @@
             treeTable.on('toolbar(demoTreeTb)', function (obj) {
                 switch (obj.event) {
                     case 'add':
-                        layer.msg('添加');
+                        layer.open({
+                            type: 2,
+                            title: '新增权限',
+                            shadeClose: true,
+                            shade: false,
+                            maxmin: true, //开启最大化最小化按钮
+                            area: ['493px', '480px'],
+                            content: '/Home/AddPermission?permissionID=0&permissionName=""',
+                            end: function () {
+                                insTb.reload({ url: baseUrl + '/api/permissions/0' });
+                            }
+                        });
                         break;
-                    case 'delete':
-                        layer.msg('删除');
+                    case 'del':
+                        //获取选中数据
+                        var data = insTb.checkStatus();
+                        //拿到选中的所有id
+                        var idsarr = [];
+                        
+                        for (var i = 0; i < data.length; i++) {                   
+                            idsarr.push(data[i].id);
+                        }
+                        if (idsarr.length == 0) {
+                            layer.msg("请至少选中一个！", { icon: 2 });
+                            return;
+                        }
+
+                         //ajax事件
+                        layer.confirm("确定要删除嘛？对应的父节点也将会被删除！", { icon: 3 }, function (index2) {
+                            var index = layer.load();
+                            var token = $.cookie("token");
+                            //删除ajax
+                            $.ajax({
+                                url: baseUrl + '/api/permissions/del?permissionIDs=' + idsarr.toString(),
+                                type: 'delete',
+                                contentType: "application/json",
+                                headers: { "Authorization": "Bearer " + token },
+                                success: function (res) {
+                                    layer.close(index);
+
+                                    layer.msg("删除成功！共删除了" + res + "条数据！", { icon: 1 }, function () {
+                                        //表格重载
+                                        insTb.reload({ url: baseUrl + '/api/permissions/0' });
+
+                                    });
+                                }
+
+                            }).fail(function () {
+                                layer.close(index);
+                            })//类别下拉框
+
+                            layer.close(index2);
+                        });
                         break;
-                    case 'update':
-                        layer.msg('编辑');
-                        break;
-                 
                 }
             });
 
 
-         
+
             $("#RoleID").change(function () {
                 var value = $("#RoleID").val();
                 //重载
@@ -118,7 +225,7 @@
             //保存按钮事件
             $("#SaceBtn").click(function () {
                 var value = $("#RoleID").val();
-                if (value==0) {
+                if (value == 0) {
                     layer.msg("请选择要分配的角色！", { icon: 2 });
                     return;
                 }
@@ -142,19 +249,19 @@
                     var token = $.cookie("token");
                     //删除ajax
                     $.ajax({
-                        url: baseUrl + '/api/permissions/edit/' + value +'?permissionIDs=' + idsarr.toString(),
+                        url: baseUrl + '/api/permissions/edit/' + value + '?permissionIDs=' + idsarr.toString(),
                         type: 'get',
                         contentType: "application/json",
                         headers: { "Authorization": "Bearer " + token },
                         success: function (res) {
                             layer.close(index);
                             if (res.code == 0) {
-                                layer.msg(res.msg,{ icon: 1 }, function () {
+                                layer.msg(res.msg, { icon: 1 }, function () {
                                     //表格重载
                                     insTb.reload({ url: baseUrl + '/api/permissions/' + value });
                                 })
                             } else {
-                                layer.msg(res.msg,{ icon: 2 } )
+                                layer.msg(res.msg, { icon: 2 })
                             }
                         }
 
@@ -168,10 +275,10 @@
 
 
 
- 
+
             })
         });
-    
+
 
     </script>
 

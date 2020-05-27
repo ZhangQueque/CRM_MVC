@@ -127,6 +127,7 @@ namespace BT.MVC.Controllers
         }
 
 
+        #region 张浩东
         /// <summary>
         /// 权限页面（张浩东）
         /// </summary>
@@ -147,6 +148,31 @@ namespace BT.MVC.Controllers
             }
             return View();
         }
+
+
+        /// <summary>
+        /// 新增权限（张浩东）
+        /// </summary>
+        /// <param name="active"></param>
+        /// <returns></returns>
+        public IActionResult AddPermission(int permissionID,string permissionName)
+        {
+            ViewBag.ID = permissionID;
+            ViewBag.Name = permissionName;
+            var token = Request.Cookies["token"];
+            if (token == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            if (token == "null")
+            {
+                return RedirectToAction("Login");
+            }
+            return View();
+        }
+        #endregion
+
 
 
 
