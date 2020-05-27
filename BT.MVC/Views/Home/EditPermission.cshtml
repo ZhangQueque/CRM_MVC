@@ -46,7 +46,7 @@
             var icon = $("#Icon").val();
             var url = $("#Url").val();
             var id = parseInt('@Model.ID');
-
+            var pid = parseInt('@Model.PID');
             if (name.trim().length == 0) {
                 layer.msg("菜单名称不能为空！", { icon: 2 });
                 return;
@@ -69,7 +69,7 @@
                     url: baseUrl + '/api/permissions/' + id,
                     type: 'put',
                     contentType: "application/json",
-                    data: JSON.stringify({ Name: name, Icon: icon, Url: url}),
+                    data: JSON.stringify({ Name: name, Icon: icon, Url: url, PID: pid }),
                     headers: { "Authorization": "Bearer " + token },
                     success: function (res) {
                         layer.close(index);
