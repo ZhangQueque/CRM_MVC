@@ -1,0 +1,60 @@
+﻿
+@{
+    ViewData["Title"] = "角色修改";
+}
+@model Roles
+
+<div class="box box-primary text-blue">
+    <div class="box-header with-border ">
+        <i class="fa fa-user-md text-aqua"></i>
+        <h3 class="box-title">角色管理</h3>
+    </div><!-- /.box-header -->
+
+    <form id="EditRoleFrom">
+        <div class="box-body">
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">角色名称</label>
+                        <input type="text" class="form-control" id="Name" value="@Model.Name" placeholder="请输入客户名称...">
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div><!-- /.box-body -->
+
+        <div class="box-footer">
+            <button type="button" onclick="PostCustomer()" class="btn btn-primary">提交</button>
+        </div>
+    </form>
+</div>
+
+
+@section Scripts{ 
+    <script>
+        var index4 = parent.layer.getFrameIndex(window.name);
+
+        function PostCustomer() {
+            var token = $.cookie("token");
+            var name = $("#Name").val();
+            var id = parseInt('@Model.ID');
+            
+            $.ajax({
+                url: baseUrl + "/api/roles/editrole?id=" + id,
+                type: "post",
+                data: JSON.stringify({ Name: name }),
+                contentType: "application/json",
+                headers: { "Authorization": "Bearer " + token },
+                success: function (res) {
+
+                    layer.msg("修改成功", { icon: 1 }, function () {
+                        parent.layer.close(index4);
+                    });
+                }
+            })
+        }  
+    </script>
+}

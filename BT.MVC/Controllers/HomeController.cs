@@ -247,6 +247,47 @@ namespace BT.MVC.Controllers
             }
             return View();
         }
+
+        public IActionResult RolesAdd(string active)
+        {
+            ViewBag.Active = active;
+            var token = Request.Cookies["token"];
+            if (token == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            if (token == "null")
+            {
+                return RedirectToAction("Login");
+            }
+            return View();
+        }
+
+        public async Task<IActionResult> RolesEdit(string active,string roleID)
+        {
+            ViewBag.CustomerID = roleID;
+            ViewBag.Active = active;
+            var token = Request.Cookies["token"];
+            if (token == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            if (token == "null")
+            {
+                return RedirectToAction("Login");
+            }
+            BT.MVC.Models.Roles roles = new Roles();
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            var res = await httpClient.GetAsync($"/api/roles/{roleID}");
+
+            if(res.IsSuccessStatusCode)
+            {
+                 roles= await res.Content.ReadAsJsonAsync<Roles>();
+            }
+            return View(roles);
+        }
         #endregion
 
 

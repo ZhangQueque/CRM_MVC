@@ -1,0 +1,90 @@
+﻿
+@{
+    ViewData["Title"] = "添加角色";
+}
+
+
+    <div class="box box-primary text-blue">
+        <div class="box-header with-border ">
+            <i class="fa fa-user-md text-aqua"></i>
+            <h3 class="box-title">角色管理</h3>
+        </div><!-- /.box-header -->
+        
+        <div id="EditCustomerFrom">
+                <div class="box-body">
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">角色名称</label>
+                                <input type="text" class="form-control" id="Name" name="Name" placeholder="请输入客户名称...">
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                </div><!-- /.box-body -->
+
+                <div class="box-footer">
+                    <button type="button" onclick="PostCustomer()" class="btn btn-primary">提交</button>
+                </div>
+        </div>
+</div>
+
+
+@section Scripts{
+
+    <script>
+        function PostCustomer() {
+            var token = $.cookie("token");
+            var name = $("#Name").val();
+            if (name == "") {
+                layer.msg("名称不能为空", { icon: 2 });
+                return;
+            }
+
+            $.ajax({
+                url: baseUrl+"/api/roles/addrole",
+                type: "post",
+                contentType: "application/json",
+                data: JSON.stringify({Name:name}),
+                headers: { "Authorization": "Bearer " + token },
+                success: function (res) {
+
+                    console.log(res);
+                    if (res.code == 1) {
+                        layer.msg(res.msg, { icon: 2 });
+                    }
+                    else {
+                        layer.msg("新增角色成功！", { icon: 1 }, function () {   //添加成功后的相关操作
+
+                            layer.confirm("需要清空文本内容吗？", { icon: 3 }, function (index) {
+
+                                location.href = "/Home/Roles";
+                                layer.close(index);
+                            });
+
+
+                            //表格重载
+                            layui.use(['table'], function () {
+                                var table = layui.table; //where可以传我们像传的任何参数
+                                table.reload("EditCustomerFrom", {
+                                    url: baseUrl + '/api/roles/rolesshow', where: {
+                                        headers: { "Authorization": "Bearer " + token }
+                                    }
+                                });
+                            });
+
+
+                        });//添加成功后的相关操作
+                    }
+                   
+                }
+
+            })
+        }
+
+    </script>
+
+}

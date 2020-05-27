@@ -3,5 +3,273 @@
     ViewData["Title"] = "Roles";
 }
 
-<h2>范耀辉</h2>
 
+    <div class="box box-primary text-blue">
+        <div class="box-header with-border ">
+            <i class="fa fa-user-md text-aqua"></i>
+            <h3 class="box-title">角色管理</h3>
+        </div><!-- /.box-header -->
+
+        <div class="box-body">
+            <div class="nav-tabs-custom">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#tab_1" data-toggle="tab" aria-expanded="true">所有角色</a></li>
+                    <li class=""><a href="#tab_2" data-toggle="tab" aria-expanded="false">新增角色</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="tab_1">
+                        <div class="box box-default">
+                            <!-- 查询栏 -->
+                            <div class="row" style="margin-top:5px">
+                                <div class="col-md-2 form-inline">
+                                    <label>角色名称</label>
+                                    <input type="text" class="form-control" id="RoleName" value="" placeholder="请输入角色名称..." />
+                                </div>
+
+                                <div class="col-md-2 form-inline">
+                                    <label>创建时间</label>
+                                    <input type="text" class="form-control" id="CreateTimeByFind" value="" placeholder="请输入创建时间..." />
+                                </div>
+
+                                <div class="col-md-1 form-inline">
+
+                                    <button class="btn btn-default" style="margin-top:24px" onclick="Search()">立即查询</button>
+                                </div>
+
+                            </div>  <!-- 查询栏 -->
+                            <table id="NoRealCustomer" lay-filter="table"></table>
+
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="tab_2">
+                        <!-- 新建 -->
+                        <div class="box box-default">
+                            <!-- form start -->
+                                <div>
+                                    <div class="box-body">
+                                        <div class="row">
+                                            <div class="col-md-4 ">
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1">角色名称</label>
+                                                    <input type="text" class="form-control" id="Name" name="Name">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                        </div><!-- /.box-body -->
+                        
+                        <div class="box-footer">
+                            <button type="button" onclick="PostCustomer()" class="btn btn-primary">提交</button>
+                        </div>
+                    </div>
+                    
+                </div><!-- 新建 -->
+               
+            </div>
+
+                </div>
+            </div>
+
+
+    <script type="text/html" id="toolbar">
+        <div class="layui-btn-container">
+            <button class="layui-btn layui-btn-primary layui-btn-sm" lay-event="addLinkMan" title="添加角色"><i class="layui-icon layui-icon-user"></i></button>
+            <button class="layui-btn  layui-btn-primary layui-btn-sm" lay-event="delete" title="删除角色"><i class="layui-icon layui-icon-delete"></i></button>
+            <button class="layui-btn layui-btn-primary layui-btn-sm" lay-event="update" title="修改角色"><i class="layui-icon layui-icon-edit"></i></button>
+
+        </div>
+    </script>
+
+    <script type="text/html" id="isDel">
+        {{# if(d.isDel==0) { }}
+        <strong style="color: #001F3F">已启用</strong>
+
+        {{# } else { }}
+        <strong style="color: #f56954">已禁用</strong>
+        {{# } }}
+
+
+
+    </script>
+           
+    
+@section Scripts{ 
+    <script>
+        function Search() {
+            var roleName = $("#RoleName").val();
+            var createTimeByFind = $("#CreateTimeByFind").val();
+            var token = $.cookie("token");
+            //表格重载
+            layui.use(['table'], function () {
+                var table = layui.table; //where可以传我们像传的任何参数
+                table.reload("NoRealCustomer", {
+                    url: baseUrl + '/api/roles/rolesshow?roleName=' + roleName + '&createTimeByFind=' + createTimeByFind,
+                    where: {
+                        headers: { "Authorization": "Bearer " + token }
+                    }
+                });
+            });
+        }
+    </script>
+
+
+   <script>
+      
+           
+                       
+        
+           
+       
+   </script>
+
+    <script>
+        layui.use(['table','laydate'], function () {
+            var token = $.cookie("token");
+            
+            var table = layui.table;
+            var laydate = layui.laydate;
+
+            laydate.render({
+                elem: "#CreateTimeByFind",
+                type: "datetime"
+            })
+            //表格渲染
+            table.render({
+                elem: '#NoRealCustomer'
+                , url: baseUrl + '/api/roles/rolesshow'  //数据接口
+                , headers: { "Authorization": "Bearer " + token }
+                , cols: [[ //表头
+                    { type: "checkbox" }
+                    , { field: 'id', title: '编号', width: 80 }
+                    , { field: 'name', title: '角色名称' }
+                    , { field: 'createTime', title: '创建时间' }
+                    , { field: 'isDel', title: '状态', templet: "#isDel" }
+                   
+                    
+                ]]
+                , page: true
+                , toolbar: "#toolbar"
+                , defaultToolbar: ['filter', 'exports']
+            });
+
+
+            //监听事件
+            table.on('toolbar(table)', function (obj) {
+                var checkStatus = table.checkStatus("NoRealCustomer"); //获取表格选中的行
+                var data = checkStatus.data;//获取选中数据
+                ;
+                switch (obj.event) {
+                    case 'addLinkMan':
+                        layer.open({
+                            type: 2,
+                            title: '角色添加',
+                            shadeClose: true,
+                            shade: false,
+                            maxmin: true, //开启最大化最小化按钮
+                            area: ['893px', '600px'],
+                            content: '/Home/RolesAdd',
+                            end: function () {
+                               
+
+                            }
+                        });
+                        break;
+                    case 'delete':  //删除
+                        if (true) {
+                            //拿到选中的所有id
+                            var idsarr = [];
+                            for (var i = 0; i < data.length; i++) {
+                                idsarr.push(data[i].id);
+                            }
+                            if (idsarr.length == 0) {
+                                layer.msg("请至少选中一个！", { icon: 2 });
+                                return;
+                            }
+                            //ajax事件
+                            layer.confirm("确定要删除嘛？", { icon: 3 }, function (index2) {
+                                var index = layer.load();
+                                var token = $.cookie("token");
+                                //删除ajax
+                                $.ajax({
+                                    url: baseUrl + '/api/roles/delroles?ids=' + idsarr.toString(),
+                                    type: 'delete',
+                                    contentType: "application/json",
+                                    headers: { "Authorization": "Bearer " + token },
+                                    success: function (res) {
+                                        layer.close(index);
+
+                                        layer.msg("删除成功！", { icon: 1 }, function () {
+                                            //表格重载
+                                            layui.use(['table'], function () {
+                                                var table = layui.table; //where可以传我们像传的任何参数
+                                                table.reload("NoRealCustomer", {
+                                                    url: baseUrl + '/api/roles/rolesshow', where: {
+                                                        headers: { "Authorization": "Bearer " + token }
+                                                    }
+                                                });
+                                            });
+                                        });
+
+                                    }
+
+                                }).fail(function () {
+                                    layer.close(index);
+                                })//类别下拉框
+
+                                layer.close(index2);
+                            });
+
+
+                        }
+                        break;
+                    case 'update':  //修改
+                        if (true) {
+                            //拿到选中的所有id
+                            var idsarr = [];
+                            for (var i = 0; i < data.length; i++) {
+                                idsarr.push(data[i].id);
+                            }
+                            if (idsarr.length == 0) {
+                                layer.msg("请至少选中一个！", { icon: 2 });
+                                return;
+                            }
+                            if (idsarr.length > 1) {
+                                layer.msg("只能选中一个修改！", { icon: 2 });
+                                return;
+                            }
+
+                            layer.open({
+                                type: 2,
+                                title: '角色修改',
+                                shadeClose: true,
+                                shade: false,
+                                maxmin: true, //开启最大化最小化按钮
+                                area: ['893px', '600px'],
+                                content: '/Home/RolesEdit?roleID=' + idsarr.toString(),
+                                end: function () {
+                                    //表格重载
+                                    layui.use(['table'], function () {
+                                        var table = layui.table; //where可以传我们像传的任何参数
+                                        table.reload("NoRealCustomer", {
+                                            url: baseUrl + '/api/roles/rolesshow', where: {
+                                                headers: { "Authorization": "Bearer " + token }
+                                            }
+                                        });
+                                    });
+
+                                }
+                            });
+
+
+                        }
+                        break;
+                    
+                };
+            });
+
+        });
+    </script>
+
+}
