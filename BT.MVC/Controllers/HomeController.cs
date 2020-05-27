@@ -128,7 +128,7 @@ namespace BT.MVC.Controllers
 
 
         /// <summary>
-        /// 权限页面
+        /// 权限页面（张浩东）
         /// </summary>
         /// <param name="active"></param>
         /// <returns></returns>
@@ -147,6 +147,110 @@ namespace BT.MVC.Controllers
             }
             return View();
         }
+
+
+
+
+        #region 周洁
+        /// <summary>
+        /// 添加员工
+        /// </summary>
+        /// <param name="active"></param>
+        /// <returns></returns>
+        public IActionResult AddEmployee(string active)
+        {
+            ViewBag.Active = active;
+            var token = Request.Cookies["token"];
+            if (token == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            if (token == "null")
+            {
+                return RedirectToAction("Login");
+            }
+            return View();
+        }
+
+
+
+        /// <summary>
+        /// 所有员工
+        /// </summary>
+        /// <param name="active"></param>
+        /// <returns></returns>
+        public IActionResult Employees(string active)
+        {
+            ViewBag.Active = active;
+            var token = Request.Cookies["token"];
+            if (token == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            if (token == "null")
+            {
+                return RedirectToAction("Login");
+            }
+            return View();
+        }
+        #endregion
+
+
+
+        #region 高紫健
+
+        /// <summary>
+        /// 角色分配
+        /// </summary>
+        /// <param name="active"></param>
+        /// <returns></returns>
+        public IActionResult Employees_Roles(string active)
+        {
+            ViewBag.Active = active;
+            var token = Request.Cookies["token"];
+            if (token == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            if (token == "null")
+            {
+                return RedirectToAction("Login");
+            }
+            return View();
+        }
+        #endregion
+
+
+
+
+        #region 范耀辉
+        /// <summary>
+        /// 角色 
+        /// </summary>
+        /// <param name="active"></param>
+        /// <returns></returns>
+        public IActionResult Roles(string active)
+        {
+            ViewBag.Active = active;
+            var token = Request.Cookies["token"];
+            if (token == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            if (token == "null")
+            {
+                return RedirectToAction("Login");
+            }
+            return View();
+        }
+        #endregion
+
+
+
 
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
