@@ -34,7 +34,12 @@
 
 
 @section Scripts{ 
-    <script>
+    <script> 
+        $(function () { //页面加载更改class
+            $("#LayoutBody").addClass("sidebar-collapse");
+
+
+        })
         var index4 = parent.layer.getFrameIndex(window.name);
 
         function PostCustomer() {

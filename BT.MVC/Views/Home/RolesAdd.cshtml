@@ -36,6 +36,13 @@
 @section Scripts{
 
     <script>
+        var index4 = parent.layer.getFrameIndex(window.name);
+
+        $(function () { //页面加载更改class
+            $("#LayoutBody").addClass("sidebar-collapse");
+
+
+        })
         function PostCustomer() {
             var token = $.cookie("token");
             var name = $("#Name").val();
@@ -59,22 +66,8 @@
                     else {
                         layer.msg("新增角色成功！", { icon: 1 }, function () {   //添加成功后的相关操作
 
-                            layer.confirm("需要清空文本内容吗？", { icon: 3 }, function (index) {
-
-                                location.href = "/Home/Roles";
-                                layer.close(index);
-                            });
-
-
-                            //表格重载
-                            layui.use(['table'], function () {
-                                var table = layui.table; //where可以传我们像传的任何参数
-                                table.reload("EditCustomerFrom", {
-                                    url: baseUrl + '/api/roles/rolesshow', where: {
-                                        headers: { "Authorization": "Bearer " + token }
-                                    }
-                                });
-                            });
+                         
+                            parent.layer.close(index4);
 
 
                         });//添加成功后的相关操作
