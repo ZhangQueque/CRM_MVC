@@ -195,6 +195,37 @@ namespace BT.MVC.Controllers
             }
             return View();
         }
+
+
+
+        /// <summary>
+        /// 员工修改页面
+        /// </summary>
+        /// <param name="employeeID"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> EmployeeEdit(string employeeID)
+        {
+            ViewBag.EmployeeID = employeeID;
+            var token = Request.Cookies["token"];
+            if (token == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            if (token == "null")
+            {
+                return RedirectToAction("Login");
+            }
+            Employees employees = new Employees();
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            var response = await httpClient.GetAsync($"api/employees/{employeeID}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                employees = await response.Content.ReadAsJsonAsync<Employees>();
+            }
+            return View(employees);
+        }
         #endregion
 
 

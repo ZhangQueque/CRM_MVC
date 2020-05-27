@@ -3,5 +3,265 @@
     ViewData["Title"] = "Employees";
 }
 
-<h2>周洁</h2>
+
+<div class="box box-warning ">
+    <div class="box-header with-border">
+        <i class="fa fa-user   text-warning"></i>
+        <h3 class="box-title">员工列表</h3>
+    </div><!-- /.box-header -->
+    <div class="box-body">
+        <div class="nav-tabs-custom">
+            <div class="tab-content">
+                <div class="tab-pane active" id="tab_1">
+                    <div class="box box-default">
+                        <!-- 查询栏 -->
+                        <div class="row" style="margin-top:5px">
+                            @*<div class="col-md-2 form-inline" id="EmployeeDiv">
+                                    <label>员工角色</label>
+                                    <select class="form-control" id="EmployeeRoleIDByFind" name="EmployeeRoleIDByFind" style="width:200px">
+                                    </select>
+                                </div>*@
+
+                            @*<div class="col-md-2 form-inline">
+                                    <label>员工角色</label>
+                                    <select class="form-control" id="EmployeeeSegmentationIDByFind" name="EmployeeeSegmentationIDByFind" style="width:200px">
+                                    </select>
+                                </div>*@
+
+                            <div class="col-md-2 form-inline">
+                                <label>员工姓名</label>
+                                <input type="text" class="form-control" id="EmployeeNameByFind" value="" placeholder="请输入员工姓名..." />
+                            </div>
+
+                            <div class="col-md-2 form-inline">
+                                <label>开始时间</label>
+                                <input type="text" class="form-control" id="StartTimeByFind" value="" placeholder="请输入开始时间..." />
+                            </div>
+                            <div class="col-md-2 form-inline">
+                                <label>结束时间</label>
+                                <input type="text" class="form-control" id="EndTimeByFind" value="" placeholder="请输入结束时间..." />
+                            </div>
+                            <div class="col-md-1 form-inline">
+
+                                <button class="btn btn-default" style="margin-top:24px" onclick="FindToCustomers()">立即查询</button>
+                            </div>
+
+                        </div>  <!-- 查询栏 -->
+                        <table id="NoRealCustomer" lay-filter="table"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+    </div><!-- /.box-body -->
+</div>
+<script type="text/html" id="toolbar">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-primary layui-btn-sm" lay-event="add" title="添加"><i class="layui-icon layui-icon-face-surprised " ></i></button>
+        <button class="layui-btn  layui-btn-primary layui-btn-sm" lay-event="delete" title="删除"><i class="layui-icon layui-icon-delete"></i></button>
+        <button class="layui-btn layui-btn-primary layui-btn-sm" lay-event="update" title="修改"><i class="layui-icon layui-icon-edit"></i></button>
+    </div>
+</script>
+
+<script type="text/html" id="ImageTemplet">
+    <img src="{{d.headImage}}" alt="{{d.name}}" />
+
+</script>
+@section scripts
+{
+    <script>
+        //——————————————————查询，layui表格重载——————————————————————————————————————
+        function FindToCustomers() {
+            var EmployeeNameByFind = $("#EmployeeNameByFind").val();
+            var startTimeByFind = $("#StartTimeByFind").val();
+            var endTimeByFind = $("#EndTimeByFind").val();
+
+
+            var token = $.cookie("token");
+            //表格重载
+            layui.use(['table'], function () {
+                var table = layui.table; //where可以传我们像传的任何参数
+                table.reload("NoRealCustomer", {
+                    url: baseUrl + '/api/employees/employeePage?EmployeeNameByFind=' + EmployeeNameByFind + '&startTimeByFind=' + startTimeByFind + '&endTimeByFind=' + endTimeByFind, where: {
+                            headers: { "Authorization": "Bearer " + token }
+                        }
+                });
+            });
+        }
+    </script>
+
+    <script>
+        //——————————————————Layui表格渲染——————————————————————————————————————
+
+        layui.use(['table', 'form', 'laydate'], function () {
+            var token = $.cookie("token");
+            var laydate = layui.laydate;
+
+            var table = layui.table;
+            var form = layui.form;
+
+            laydate.render({
+                elem: "#StartTimeByFind",
+                type: "datetime"
+            })
+
+            laydate.render({
+                elem: "#EndTimeByFind",
+                type: "datetime"
+            })
+
+
+            //表格渲染
+            table.render({
+                elem: '#NoRealCustomer'
+                , url: baseUrl + '/api/employees/employeePage'
+                , headers: { "Authorization": "Bearer " + token }
+                , cols: [[ //表头
+                    { type: "checkbox" }
+                    , { field: 'id', title: '编号', width: 80 }
+                    , { field: 'name', title: '员工姓名' }
+                    , { field: 'email', title: '联系邮箱' }
+                    , { field: 'phone', title: '联系电话' }
+                    , { field: 'code', title: '唯一编码' }
+                    , { field: 'employeePID', title: '上级ID', hide: true }
+                    , { field: 'isDel', title: '是否删除', hide: true }
+                    , { field: 'headImage', title: '员工Logo', templet: "#ImageTemplet" }
+                    , { field: 'createTime', title: '创建时间' }
+                ]]
+                , page: true
+                , toolbar: "#toolbar"
+                , defaultToolbar: ['filter', 'exports']
+            });
+
+
+            //监听事件
+            table.on('toolbar(table)', function (obj) {
+                var checkStatus = table.checkStatus("NoRealCustomer"); //获取表格选中的行
+                var data = checkStatus.data;//获取选中数据
+                ;
+                switch (obj.event) {
+                    case 'add':
+                        location.href = '/Home/AddEmployee';
+                        break;
+                    case 'delete':  //删除
+                        if (true) {
+                            //拿到选中的所有id
+                            var idsarr = [];
+                            for (var i = 0; i < data.length; i++) {
+                                idsarr.push(data[i].id);
+                            }
+                            if (idsarr.length == 0) {
+                                layer.msg("请至少选中一个！", { icon: 2 });
+                                return;
+                            }
+
+                            //ajax事件
+                            layer.confirm("确定要删除嘛？", { icon: 3 }, function (index2) {
+                                var index = layer.load();
+                                var token = $.cookie("token");
+                                //删除ajax
+                                $.ajax({
+                                    url: baseUrl + '/api/employees/delete?ids=' + idsarr.toString(),
+                                    type: 'delete',
+                                    contentType: "application/json",
+                                    headers: { "Authorization": "Bearer " + token },
+                                    success: function (res) {
+                                        layer.close(index);
+
+                                        layer.msg("删除成功！共删除了" + res + "条数据！", { icon: 1 }, function () {
+                                            //表格重载
+                                            layui.use(['table'], function () {
+                                                var table = layui.table; //where可以传我们像传的任何参数
+                                                table.reload("NoRealCustomer", {
+                                                    url: baseUrl + '/api/employees/employeePage', where: {
+                                                        headers: { "Authorization": "Bearer " + token }
+                                                    }
+                                                });
+                                            });
+                                        });
+
+                                    }
+
+                                }).fail(function () {
+                                    layer.close(index);
+                                })//类别下拉框
+                                layer.close(index2);
+                            });
+
+
+                        }
+                        break;
+                    case 'update':  //修改
+                        if (true) {
+                            //拿到选中的所有id
+                            var idsarr = [];
+                            for (var i = 0; i < data.length; i++) {
+                                idsarr.push(data[i].id);
+                            }
+                            if (idsarr.length == 0) {
+                                layer.msg("请至少选中一个！", { icon: 2 });
+                                return;
+                            }
+                            if (idsarr.length > 1) {
+                                layer.msg("只能选中一个修改！", { icon: 2 });
+                                return;
+                            }
+                            layer.msg(idsarr.toString(0));
+
+                            layer.open({
+                                type: 2,
+                                title: '员工修改',
+                                shadeClose: true,
+                                shade: false,
+                                maxmin: true, //开启最大化最小化按钮
+                                area: ['893px', '600px'],
+                                content: '/Home/EmployeeEdit?employeeID=' + idsarr.toString(),
+                                end: function () {
+                                    //表格重载
+                                    layui.use(['table'], function () {
+                                        var table = layui.table; //where可以传我们像传的任何参数
+                                        table.reload("NoRealCustomer", {
+                                            url: baseUrl + '/api/employees/employeePage', where: {
+                                                headers: { "Authorization": "Bearer " + token }
+                                            }
+                                        });
+                                    });
+
+                                }
+                            });
+
+
+                        }
+                        break;
+                  
+                };
+            });
+
+        });
+
+        //—————————————图片改变事件———————————————————————————————————————————
+
+
+
+        $("#UploadFile").change(function () {
+            var reader = new FileReader();//创建一个读流
+
+            var file = $("#UploadFile")[0].files[0];//获取选中文件
+
+            reader.readAsDataURL(file);//读文件
+
+
+            reader.onload = function (e) {//读事件
+                $("#LogoImage").attr('src', e.target.result);
+                //$("#UserImg").attr('src', e.target.result)
+
+            };
+
+        });
+    </script>
+
+
+}
 

@@ -3,5 +3,171 @@
     ViewData["Title"] = "AddEmployee";
 }
 
- 周洁
+
+    <div class="box box-warning ">
+        <div class="box-header with-border">
+            <i class="fa fa-user-plus  text-warning"></i>
+            <h3 class="box-title">添加员工</h3>
+        </div><!-- /.box-header -->
+        <div class="box-body">
+            <div class="nav-tabs-custom">
+                <div class="tab-content">
+                    <!-- 新建 -->
+                    <div class="box box-default">
+
+                        <!-- form start -->
+                        <form id="CreateEmployeeFrom">
+                            <div class="box-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">员工姓名</label>
+                                            <input type="text" class="form-control" id="Name" name="Name" placeholder="请输入员工姓名...">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="exampleInputPassword1">密码</label>
+                                            <input type="text" class="form-control" id="Password" name="Password" placeholder="请输入员工密码...">
+                                        </div>
+                                    </div>
+
+                                   
+                                </div>
+
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">电话号码</label>
+                                            <input type="text" class="form-control" id="Phone" name="Phone" placeholder="请输入客户电话号码...">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">邮箱</label>
+                                            <input type="text" class="form-control" id="Email" name="Email" placeholder="请输入客户邮箱...">
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                                <div class="row">
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="exampleInputFile">员工头像</label>
+                                            <input type="file" id="UploadFile" name="UploadFile">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <img id="LogoImage" src="~/Img/logo.png" alt="选中的头像" style="height:150px" class="img-responsive" />
+                                    </div>
+                                </div>
+                            </div><!-- /.box-body -->
+
+                            <div class="box-footer">
+                                <button type="button" onclick="PostCustomer()" class="btn btn-primary">提交</button>
+                            </div>
+                        </form>
+                    </div><!-- 新建 -->
+                   
+                     
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+@section scripts
+{
+    <script>
+
+        //——————————————————员工创建(添加成功后的相关操作)——————————————————————————————————————
+
+        //创建员工
+        function PostCustomer() {
+            //获取表单数据
+            var formdata = new FormData($("#CreateEmployeeFrom")[0]);
+            var index = layer.load();
+            var token = $.cookie("token");
+            //创建客户
+            $.ajax({
+                url: baseUrl + '/api/employees/create',
+                type: 'post',
+                contentType: false,
+                cache: false,
+                processData: false,
+                data: formdata,
+                headers: { "Authorization": "Bearer " + token },
+                success: function (res) {
+                    layer.close(index);
+                    if (res.code == 1) {
+                        layer.msg(res.msg, { icon: 2 });
+                    } else {
+                        layer.msg(res.msg, { icon: 1 }, function () {   //添加成功后的相关操作
+
+                            layer.confirm("需要清空文本内容吗？", { icon: 3 }, function (index) {
+
+                                location.href = "/Home/Employees";
+                                layer.close(index);
+                            });
+
+
+                            ////表格重载
+                            //layui.use(['table'], function () {
+                            //    var table = layui.table; //where可以传我们像传的任何参数
+                            //    table.reload("NoRealCustomer", {
+                            //        url: baseUrl + '/api/customers/noreal?status=0', where: {
+                            //            headers: { "Authorization": "Bearer " + token }
+                            //        }
+                            //    });
+                            //});
+
+
+                        });//添加成功后的相关操作
+                    }
+                }
+
+            }).fail(function () {
+                layer.close(index);
+
+            })
+
+        } //创建客户
+    </script>
+    <script>
+        //员工下拉框
+        var token = $.cookie("token");
+        var index = layer.load();
+        $.ajax({
+            url: baseUrl + '/api/employees/employee',
+            type: 'get',
+            contentType: "application/json",
+            headers: { "Authorization": "Bearer " + token },
+            success: function (res) {
+                layer.close(index);
+                console.log(res);
+                if (res.code == 0) {
+                    $("#EmployeeIDByFind").empty();
+                    $("#EmployeeIDByFind").append('<option value="0">全部</option>');
+
+                    $(res.data).each(function () {
+                        var line = '<option value="' + this.id + '">' + this.name + '</option>';
+                        $("#EmployeeIDByFind").append(line);
+                    });
+                } 
+            }
+
+        }).fail(function () {
+            layer.close(index);
+        }) //员工下拉框
+    </script>
+
+
+
+}
 
