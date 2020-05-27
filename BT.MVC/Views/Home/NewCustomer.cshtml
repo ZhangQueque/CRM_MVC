@@ -404,6 +404,22 @@
 
         //创建客户
         function PostCustomer() {
+            if ($("#Name").val().trim().length == 0) {
+                layer.msg("客户名称不能为空！", { icon: 2 });
+                return;
+            }
+            if ($("#Address").val().trim().length == 0) {
+                layer.msg("客户地址不能为空！", { icon: 2 });
+                return;
+            }
+            if ($("#Email").val().trim().length == 0) {
+                layer.msg("客户邮箱不能为空！", { icon: 2 });
+                return;
+            }
+            if ($("#Phone").val().trim().length == 0) {
+                layer.msg("客户电话不能为空！", { icon: 2 });
+                return;
+            }
             //获取表单数据
             var formdata = new FormData($("#CreateCustomerFrom")[0]);
             var index = layer.load();

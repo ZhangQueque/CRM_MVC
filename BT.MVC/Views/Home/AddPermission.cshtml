@@ -1,0 +1,100 @@
+﻿
+@{
+    ViewData["Title"] = "添加权限";
+}
+
+
+<div class="box box-default ">
+    <div class="box-header with-border">
+        <i class="fa fa-unlock  text-dark"></i>
+        <h3 class="box-title">新增权限</h3>&nbsp;&nbsp;&nbsp;&nbsp;
+
+        @if (ViewBag.ID == 0)
+        {
+            <h3 class="box-title">您正在添加 <span style="color: #3c8dbc"> “一级菜单”</span></h3>
+        }
+        else
+        {
+            <h3 class="box-title">您正在为  <span style="color: #3c8dbc"> “@ViewBag.Name”</span>  添加  <span style="color: #3c8dbc"> “子级菜单”</span></h3>
+
+        }
+    </div><!-- /.box-header -->
+    <div class="box-body">
+
+        <div class="row">
+            <div class="form-group col-md-4 col-md-offset-4">
+                <label>菜单名称</label>
+                <input type="text" id="Name" class="form-control" value="" />
+            </div>
+            <div class="form-group col-md-4 col-md-offset-4">
+                <label>Icon</label>
+                <input type="text" id="Icon" class="form-control" value="" />
+            </div>
+            <div class="form-group col-md-4 col-md-offset-4">
+                <label>Url</label>
+                <input type="text" id="Url" class="form-control" value="" />
+            </div>
+            <div class="form-group col-md-4 col-md-offset-4">
+                <button class="btn btn-primary" onclick="AddMenu()">添加</button>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts{
+    <script>
+        function AddMenu() {
+            var name = $("#Name").val();
+            var icon = $("#Icon").val();
+            var url = $("#Url").val();
+            var pid = parseInt('@ViewBag.ID');
+            console.log(pid)
+            if (name.trim().length == 0) {
+                layer.msg("菜单名称不能为空！", { icon: 2 });
+                return;
+            }
+            if (icon.trim().length == 0) {
+                layer.msg("Icon名称不能为空！", { icon: 2 });
+                return;
+            }
+            if (url.trim().length == 0) {
+                layer.msg("Url称不能为空！", { icon: 2 });
+                return;
+            }
+            //当你在iframe页面关闭自身时
+            var index4 = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+            //ajax事件
+            layer.confirm("确定要添加权限嘛？", { icon: 3 }, function (index2) {
+                var index = layer.load();
+                var token = $.cookie("token");
+                $.ajax({
+                    url: baseUrl + '/api/permissions/add',
+                    type: 'post',
+                    contentType: "application/json",
+                    data: JSON.stringify({ Name: name, Icon: icon, Url: url, PID: pid }),
+                    headers: { "Authorization": "Bearer " + token },
+                    success: function (res) {
+                        layer.close(index);
+
+                        layer.msg("添加权限成功！", { icon: 1 },function () {
+                            parent.layer.close(index4); //再执行关闭   
+                        });
+                    }
+
+                }).fail(function () {
+                    layer.close(index);
+                })
+                layer.close(index2);
+            });
+        }
+
+
+        $(function () { //页面加载更改class
+            $("#LayoutBody").addClass("sidebar-collapse");
+
+          
+        })
+    </script>
+}

@@ -3,5 +3,209 @@
     ViewData["Title"] = "Employees_Roles";
 }
 
-<h2>高紫健</h2>
 
+<div class="box box-danger ">
+    <div class="box-header with-border">
+        <i class="fa fa-users  text-danger"></i>
+        <h3 class="box-title">角色分配</h3>
+    </div><!-- /.box-header -->
+    <div class="box-body" id="demoTreeTb">
+        <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="#tab_1" data-toggle="tab" aria-expanded="true">所有潜在客户</a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="tab_1">
+                    <div class="box box-default">
+                        <!-- 查询栏 -->
+
+                        <div class="row" style="margin-top:5px">
+
+                            <div class="col-md-2 form-inline" id="EmployeeDiv">
+                                <label>角色</label>
+                                <select class="form-control" id="Employee_RoleIDByFind" name="Employee_RoleIDByFind" style="width:200px">
+                                </select>
+                            </div>
+
+                            <div class="col-md-2 form-inline">
+                                <label>员工名称</label>
+                                <input type="text" class="form-control" id="CustomerNameByFind" value="" placeholder="请输入员工名称..." />
+                            </div>
+
+                            <div class="col-md-1 form-inline">
+
+                                <button class="btn btn-default" style="margin-top:24px" onclick="FindToCustomers()">立即查询</button>
+                            </div>
+
+                        </div>  <!-- 查询栏 -->
+                        <table id="Employees_role" lay-filter="table"></table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div><!-- /.box-body -->
+</div>
+<!-- 表格操作列 -->
+<script type="text/html" id="tbBar">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="add">添加</a>
+    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="edit">修改</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+@section Scripts{
+
+
+    <script>
+        //——————————————————查询，layui表格重载——————————————————————————————————————
+        function FindToCustomers() {
+            var employee_RoleIDByFind = $("#Employee_RoleIDByFind").val();
+            var customerNameByFind = $("#CustomerNameByFind").val();
+            
+            var token = $.cookie("token");
+            //表格重载
+            layui.use(['table'], function () {
+                var table = layui.table; //where可以传我们像传的任何参数
+                table.reload("Employees_role", {
+                    url: baseUrl + '/api/employees_roles/employees_role?employee_RoleIDByFind=' + employee_RoleIDByFind + '&customerNameByFind=' + customerNameByFind
+                });
+            });
+        }
+    </script>
+
+    <script>
+        //——————————————————Layui表格渲染——————————————————————————————————————
+
+        layui.use(['table', 'form'], function () {
+            var token = $.cookie("token");
+            var table = layui.table;
+            var form = layui.form;
+
+            //表格渲染
+            table.render({
+                elem: '#Employees_role'
+                , url: baseUrl + '/api/employees_roles/employees_role'  //数据接口
+                , headers: { "Authorization": "Bearer " + token }
+                , cols: [[ //表头
+                    { type: "checkbox" }
+                    , { field: 'id', title: '编号', width: 80 }
+                    , { field: 'employeeName', title: '员工姓名' }
+                    , { field: 'roleName', title: '当前角色' }
+                    , { field: 'createTime', title: '创建时间' }
+                    ,{ align: 'center', toolbar: '#tbBar', title: '操作' }
+                ]]
+                , page: true
+                , toolbar: "#toolbar"
+                , defaultToolbar: ['filter', 'exports']
+            });
+
+
+            //监听事件
+            table.on('toolbar(table)', function (obj) {
+                var checkStatus = table.checkStatus("NoRealCustomer"); //获取表格选中的行
+                var data = checkStatus.data;//获取选中数据
+                ;
+                switch (obj.event) {
+                    case 'addLinkMan':
+                        layer.msg('添加角色');
+                        break;
+                    case 'delete':  //删除
+                        if (true) {
+                            //拿到选中的所有id
+                            var idsarr = [];
+                            for (var i = 0; i < data.length; i++) {
+                                idsarr.push(data[i].id);
+                            }
+                            if (idsarr.length == 0) {
+                                layer.msg("请至少选中一个！", { icon: 2 });
+                                return;
+                            }
+
+                            //ajax事件
+                            layer.confirm("确定要删除嘛？", { icon: 3 }, function (index2) {
+                                var index = layer.load();
+                                var token = $.cookie("token");
+                                //删除ajax
+                                $.ajax({
+                                    url: baseUrl + '/api/customers/delete?ids=' + idsarr.toString(),
+                                    type: 'delete',
+                                    contentType: "application/json",
+                                    headers: { "Authorization": "Bearer " + token },
+                                    success: function (res) {
+                                        layer.close(index);
+
+                                        layer.msg("删除成功！共删除了" + res + "条数据！", { icon: 1 }, function () {
+                                            //表格重载
+                                            layui.use(['table'], function () {
+                                                var table = layui.table; //where可以传我们像传的任何参数
+                                                table.reload("NoRealCustomer", {
+                                                    url: baseUrl + '/api/employees_roles/employees_role?status=0', where: {
+                                                        headers: { "Authorization": "Bearer " + token }
+                                                    }
+                                                });
+                                            });
+                                        });
+
+                                    }
+
+                                }).fail(function () {
+                                    layer.close(index);
+                                })//类别下拉框
+
+                                layer.close(index2);
+                            });
+
+
+                        }
+                        break;
+                    case 'update':  //修改
+                        {
+
+
+                        }
+                        break;
+                    
+                };
+            });
+
+
+        });
+
+    </script>
+
+
+    <script>
+
+        //——————————————————下拉框(员工下拉框,类别下拉框)——————————————————————————————————————
+        //下拉框
+        $(function () {
+            var index = layer.load();
+            var token = $.cookie("token");
+            //类别下拉框
+            $.ajax({
+                url: baseUrl + '/api/employees_roles/Role',
+                type: 'get',
+                contentType: "application/json",
+                headers: { "Authorization": "Bearer " + token },
+                success: function (res) {
+                    layer.close(index);
+                    $("#Employee_RoleIDByFind").empty();
+                    $("#Employee_RoleIDByFind").append('<option value="">请选择</option>');
+                    $(res).each(function () {
+                        var line = '<option value="' + this.id + '">' + this.name + '</option>';
+                        $("#Employee_RoleIDByFind").append(line);
+                    });
+                }
+            }).fail(function () {
+                layer.close(index);
+            })
+        })
+
+
+    </script>
+
+
+
+
+
+}
