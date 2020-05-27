@@ -171,6 +171,39 @@ namespace BT.MVC.Controllers
             }
             return View();
         }
+
+
+
+        /// <summary>
+        /// 修改权限（张浩东）
+        /// </summary>
+        /// <param name="active"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> EditPermission(int permissionID )
+        {
+           
+            var token = Request.Cookies["token"];
+            if (token == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            if (token == "null")
+            {
+                return RedirectToAction("Login");
+            }
+
+            Permissions permission = new Permissions();
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            var response = await httpClient.GetAsync($"/api/permissions/detail/{permissionID}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                permission = await response.Content.ReadAsJsonAsync<Permissions>();
+            }
+
+            return View(permission);
+        }
         #endregion
 
 

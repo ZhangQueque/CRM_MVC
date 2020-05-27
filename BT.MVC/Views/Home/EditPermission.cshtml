@@ -1,41 +1,36 @@
 ﻿
 @{
-    ViewData["Title"] = "添加权限";
+    ViewData["Title"] = "修改权限";
 }
-
-
+@model Permissions
 <div class="box box-default ">
     <div class="box-header with-border">
         <i class="fa fa-unlock  text-dark"></i>
-        <h3 class="box-title">新增权限</h3>&nbsp;&nbsp;&nbsp;&nbsp;
-
-        @if (ViewBag.ID == 0)
-        {
-            <h3 class="box-title">您正在添加 <span style="color: #3c8dbc"> “一级菜单”</span></h3>
-        }
-        else
-        {
-            <h3 class="box-title">您正在为  <span style="color: #3c8dbc"> “@ViewBag.Name”</span>  添加  <span style="color: #3c8dbc"> “子级菜单”</span></h3>
-
-        }
+        <h3 class="box-title">修改权限</h3>
     </div><!-- /.box-header -->
     <div class="box-body">
-
         <div class="row">
             <div class="form-group col-md-4 col-md-offset-4">
                 <label>菜单名称</label>
-                <input type="text" id="Name" class="form-control" value="" />
+                <input type="text" id="Name" class="form-control" value="@Model.Name" />
             </div>
             <div class="form-group col-md-4 col-md-offset-4">
                 <label>Icon</label>
-                <input type="text" id="Icon" class="form-control" value="" />
+                <input type="text" id="Icon" class="form-control" value="@Model.Icon" />
             </div>
             <div class="form-group col-md-4 col-md-offset-4">
                 <label>Url</label>
-                <input type="text" id="Url" class="form-control" value="" />
+                @if (Model.ID<=10)
+                {
+                    <input type="text" id="Url" class="form-control" disabled value="@Model.Url" />
+                }
+                else
+                {
+                    <input type="text" id="Url" class="form-control"  value="@Model.Url" />
+                }
             </div>
             <div class="form-group col-md-4 col-md-offset-4">
-                <button class="btn btn-primary" onclick="AddMenu()">添加</button>
+                <button class="btn btn-primary" onclick="EditMenu()">修改</button>
             </div>
         </div>
 
@@ -43,13 +38,14 @@
 
 </div>
 
+
 @section Scripts{
     <script>
-        function AddMenu() {
+        function EditMenu() {
             var name = $("#Name").val();
             var icon = $("#Icon").val();
             var url = $("#Url").val();
-            var pid = parseInt('@ViewBag.ID');
+            var id = parseInt('@Model.ID');
 
             if (name.trim().length == 0) {
                 layer.msg("菜单名称不能为空！", { icon: 2 });
@@ -66,20 +62,20 @@
             //当你在iframe页面关闭自身时
             var index4 = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
             //ajax事件
-            layer.confirm("确定要添加权限嘛？", { icon: 3 }, function (index2) {
+            layer.confirm("确定要修改权限嘛？", { icon: 3 }, function (index2) {
                 var index = layer.load();
                 var token = $.cookie("token");
                 $.ajax({
-                    url: baseUrl + '/api/permissions/add',
-                    type: 'post',
+                    url: baseUrl + '/api/permissions/' + id,
+                    type: 'put',
                     contentType: "application/json",
-                    data: JSON.stringify({ Name: name, Icon: icon, Url: url, PID: pid }),
+                    data: JSON.stringify({ Name: name, Icon: icon, Url: url}),
                     headers: { "Authorization": "Bearer " + token },
                     success: function (res) {
                         layer.close(index);
 
-                        layer.msg("添加权限成功！", { icon: 1 },function () {
-                            parent.layer.close(index4); //再执行关闭   
+                        layer.msg("修改权限成功！", { icon: 1 },function () {
+                            parent.layer.close(index4); //再执行关闭
                         });
                     }
 
@@ -94,7 +90,7 @@
         $(function () { //页面加载更改class
             $("#LayoutBody").addClass("sidebar-collapse");
 
-          
+
         })
     </script>
 }
