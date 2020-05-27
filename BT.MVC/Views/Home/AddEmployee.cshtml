@@ -165,6 +165,27 @@
         }).fail(function () {
             layer.close(index);
         }) //员工下拉框
+
+
+        //—————————————图片改变事件———————————————————————————————————————————
+
+
+
+        $("#UploadFile").change(function () {
+            var reader = new FileReader();//创建一个读流
+
+            var file = $("#UploadFile")[0].files[0];//获取选中文件
+
+            reader.readAsDataURL(file);//读文件
+
+
+            reader.onload = function (e) {//读事件
+                $("#LogoImage").attr('src', e.target.result);
+                //$("#UserImg").attr('src', e.target.result)
+
+            };
+
+        });
     </script>
 
 
