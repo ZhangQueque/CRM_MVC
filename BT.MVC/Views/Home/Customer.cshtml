@@ -66,12 +66,12 @@
                                     <div class="col-md-4 ">
 
                                         <div class="form-group">
-                                            <label for="exampleInputEmail1">选择潜在客户</label>
+
+                                            <label for="exampleInputEmail1">客户名称</label>
+                                            <input type="text" class="form-control" id="Name" name="Name" placeholder="查询">
+                                            <label for="exampleInputEmail1">选择客户</label>
                                             <select class="form-control" id="NoRealCustomerSelect" onchange="GetCustomerDetal(this.value)" name="NoRealCustomerSelect">
                                             </select>
-                                            <label for="exampleInputEmail1">客户名称</label>
-                                            <input type="text" class="form-control" id="Name" name="Name"  >
-
                                         </div>
 
                                     </div>
@@ -273,7 +273,7 @@
                     customerArr = res;
 
                     $("#NoRealCustomerSelect").empty();
-
+                    $("#NoRealCustomerSelect").append('<option value="0">请选择</option>');
                     $(res).each(function () {
                         var line = '<option value="' + this.id + '">' + this.name + '</option>';
                         $("#NoRealCustomerSelect").append(line);
@@ -372,6 +372,11 @@
 
             productObj.totalPrice = parseFloat($("#TotalPrice").val());//总价
 
+            if (productObj.number.length == 0) {
+                layer.msg("数量不能为空！", { icon: 2 });
+                return;
+            }
+          
             productObj.title = "";  //表特
             for (var i = 0; i < productArr.length; i++) {
                 if (productArr[i].id == productObj.id) {
@@ -423,44 +428,61 @@
 
             var orderProducts = tableProductArr;
 
+            if (parseInt(customerID)==0) {
+                layer.msg("请选择客户！", { icon: 2 });
+                return;
+            }
+            if (totalPrice.trim().length == 0) {
+                layer.msg("请选择产品！", { icon: 2 });
+                return;
+            }
 
+            if (parseInt(totalPrice) == 0) {
+                layer.msg("请选择产品！", { icon: 2 });
+                return;
+            }
             var token = $.cookie("token");
 
-            //新增订单
-            $.ajax({
-                url: baseUrl + '/api/orders',
-                type: 'post',
-                contentType: "application/json",
-                data: JSON.stringify({ orderCreateDto: { CustomerID: parseInt(customerID), TotalPrice: parseFloat(totalPrice) }, ProductsCreateDtos: orderProducts }),
-                headers: { "Authorization": "Bearer " + token },
-                success: function (res) {
+            layer.confirm("确定要新增订单吗？", { icon: 3 }, function (index5) {
+                //新增订单
+                $.ajax({
+                    url: baseUrl + '/api/orders',
+                    type: 'post',
+                    contentType: "application/json",
+                    data: JSON.stringify({ orderCreateDto: { CustomerID: parseInt(customerID), TotalPrice: parseFloat(totalPrice) }, ProductsCreateDtos: orderProducts }),
+                    headers: { "Authorization": "Bearer " + token },
+                    success: function (res) {
 
 
-                    layer.msg("新增订单成功！", { icon: 1 }, function () {   //添加成功后的相关操作
+                        layer.msg("新增订单成功！", { icon: 1 }, function () {   //添加成功后的相关操作
 
-                        layer.confirm("需要清空文本内容吗？", { icon: 3 }, function (index) {
+                            layer.confirm("需要清空文本内容吗？", { icon: 3 }, function (index) {
 
-                            location.href = "/Home/Customer";
-                            layer.close(index);
-                        });
-
-
-                        //表格重载
-                        layui.use(['table'], function () {
-                            var table = layui.table; //where可以传我们像传的任何参数
-                            table.reload("NoRealCustomer", {
-                                url: baseUrl + '/api/customers/noreal?status=1', where: {
-                                    headers: { "Authorization": "Bearer " + token }
-                                }
+                                location.href = "/Home/Customer";
+                                layer.close(index);
                             });
-                        });
 
 
-                    });//添加成功后的相关操作
-                }
+                            //表格重载
+                            layui.use(['table'], function () {
+                                var table = layui.table; //where可以传我们像传的任何参数
+                                table.reload("NoRealCustomer", {
+                                    url: baseUrl + '/api/customers/noreal?status=1', where: {
+                                        headers: { "Authorization": "Bearer " + token }
+                                    }
+                                });
+                            });
 
-            }).fail(function () {
-            }) //新增订单
+
+                        });//添加成功后的相关操作
+                    }
+
+                }).fail(function () {
+                }) //新增订单
+                layer.close(index5);
+            });
+
+        
          }
 
 
@@ -560,7 +582,6 @@
                                 layer.msg("请至少选中一个！", { icon: 2 });
                                 return;
                             }
-
                             //ajax事件
                             layer.confirm("确定要删除嘛？", { icon: 3 }, function (index2) {
                                 var index = layer.load();
