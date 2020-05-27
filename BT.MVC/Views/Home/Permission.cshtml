@@ -9,38 +9,119 @@
         <h3 class="box-title">权限管理</h3>
     </div><!-- /.box-header -->
     <div class="box-body">
-        <div class="row">
-            <div class="col-md-6 form-inline">
-                <label>角色：</label>
-                <select class="form-control" id="RoleID" name="RoleID" style="width:200px">
-                </select>
-            </div>
-            <div class="col-md-6">
-                <button class="btn btn-danger " id="SaceBtn">保存</button>
-            </div>
+        <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="#tab_1" data-toggle="tab" aria-expanded="true">权限分配</a></li>
+                <li class=""><a href="#tab_2" data-toggle="tab" aria-expanded="false">已删除权限</a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="tab_1">
+                    <div class="row">
+                        <div class="col-md-6 form-inline">
+                            <label>角色：</label>
+                            <select class="form-control" id="RoleID" name="RoleID" style="width:200px">
+                            </select>
+                            <button class="btn btn-default " style="margin-left:15px" id="SaceBtn">保存</button>
 
-        </div>
-        <div class="row  " style="margin-top:16px">
-            <table id="demoTreeTb"></table>
+                        </div>
 
+                    </div>
+                    <div class="row  " style="margin-top:16px">
+                        <table id="demoTreeTb"></table>
+
+                    </div>
+                </div>
+                <div class="tab-pane" id="tab_2">
+                    <!-- 查询栏 -->
+                    <div class="row" style="margin-top:5px">
+
+                        <div class="col-md-2 form-inline">
+                            <label>菜单名称</label>
+                            <input type="text" class="form-control" id="CustomerNameByFind" value="" placeholder="请输入菜单名称..." />
+                        </div>
+
+                        <div class="col-md-2 form-inline">
+                            <label>开始时间</label>
+                            <input type="text" class="form-control" id="StartTimeByFind" value="" placeholder="请输入开始时间..." />
+                        </div>
+                        <div class="col-md-2 form-inline">
+                            <label>结束时间</label>
+                            <input type="text" class="form-control" id="EndTimeByFind" value="" placeholder="请输入结束时间..." />
+                        </div>
+                        <div class="col-md-1 form-inline">
+
+                            <button class="btn btn-default" style="margin-top:24px" onclick="FindToCustomers()">立即查询</button>
+                        </div>
+
+                    </div>  <!-- 查询栏 -->
+                    <table id="DeletePermissionTable" lay-filter="table"></table>
+
+                </div>
+
+            </div>
         </div>
-    </div><!-- /.box-body -->
+
+    </div>
+
 </div>
 
 <!-- 表格操作列 -->
 <script type="text/html" id="tbBar">
-    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="add">添加</a>
-    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="edit">修改</a>
-    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="add" title="添加子级菜单"><i class="layui-icon layui-icon-add-1"></i></a>
+    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="edit" title="修改"><i class="layui-icon layui-icon-edit"></i></a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del" title="删除"><i class="layui-icon layui-icon-delete"></i></a>
 </script>
 
+<script type="text/html" id="tool">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="old" title="还原"><i class="layui-icon layui-icon-refresh-1"></i></a>
+
+</script>
+
+<script type="text/html" id="toolbarDelete">
+    <a class="layui-btn layui-btn-primary layui-btn-sm" lay-event="old" title="还原"><i class="layui-icon layui-icon-refresh-1"></i></a>
+
+</script>
+
+<!-- 表格操作列 -->
+<script type="text/html" id="toolbar">
+    <a class="layui-btn layui-btn-primary layui-btn-sm" lay-event="add" title="添加一级菜单"><i class="layui-icon layui-icon-add-1"></i></a>
+    <a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del" title="批量删除"><i class="layui-icon layui-icon-delete"></i></a>
+
+</script>
 
 @section Scripts{
- 
 
     <script>
+
+        //查询事件
+        function FindToCustomers() {
+            var customerNameByFind = $("#CustomerNameByFind").val();
+            var startTimeByFind = $("#StartTimeByFind").val();
+            var endTimeByFind = $("#EndTimeByFind").val();
+
+
+            var token = $.cookie("token");
+            //表格重载
+            layui.use(['table'], function () {
+                var table = layui.table; //where可以传我们像传的任何参数
+                table.reload("DeletePermissionTable", {
+                    url: baseUrl + '/api/permissions/delList?customerNameByFind=' + customerNameByFind + '&startTimeByFind=' + startTimeByFind + '&endTimeByFind=' + endTimeByFind + '&status=1', where: {
+                        headers: { "Authorization": "Bearer " + token }
+                    }
+                });
+            });
+        }
+
+
+
+    </script>
+
+
+    <script>
+        var insTb;
+        //Layui树表格
         layui.config({
-            base: 'https://localhost:44347/'
+            base: '/'
         }).use(['layer', 'util', 'treeTable'], function () {
             var $ = layui.jquery;
             var layer = layui.layer;
@@ -49,10 +130,10 @@
             $('body').removeClass('layui-hide');
 
             // 渲染表格
-            var insTb = treeTable.render({
+            insTb = treeTable.render({
                 elem: '#demoTreeTb',
                 url: baseUrl + '/api/permissions/0',
-                toolbar: 'default',
+                toolbar: '#toolbar',
                 height: 'full-200',
                 tree: {
                     iconIndex: 2,
@@ -64,11 +145,13 @@
                 ],
                 cols: [
                     [
-                        { type: 'numbers' },
+                        { type: "numbers"},
                         { type: 'checkbox' },
                         { field: 'name', title: '菜单名称' },
                         { field: 'url', title: '菜单地址' },
                         { field: 'createTime', title: '创建时间' },
+                        { field: 'id', title: '编号', width: 80 },
+                        { field: 'pid', title: '父级编号', width: 80 },
                         { align: 'center', toolbar: '#tbBar', title: '操作' }
                     ]
                 ],
@@ -79,14 +162,68 @@
             treeTable.on('tool(demoTreeTb)', function (obj) {
                 switch (obj.event) {
                     case 'add':
-                        layer.msg('添加');
+                        layer.open({
+                            type: 2,
+                            title: '新增权限',
+                            shadeClose: true,
+                            shade: false,
+                            maxmin: true, //开启最大化最小化按钮
+                            area: ['493px', '480px'],
+                            content: '/Home/AddPermission?permissionID=' + obj.data.id + '&permissionName=' + obj.data.name,
+                            end: function () {
+                                insTb.reload({ url: baseUrl + '/api/permissions/0' });
+
+                            }
+                        });
                         break;
                     case 'edit':
-                        layer.msg('编辑');
+                        layer.open({
+                            type: 2,
+                            title: '修改权限',
+                            shadeClose: true,
+                            shade: false,
+                            maxmin: true, //开启最大化最小化按钮
+                            area: ['493px', '480px'],
+                            content: '/Home/EditPermission?permissionID=' + obj.data.id,
+                            end: function () {
+                                insTb.reload({ url: baseUrl + '/api/permissions/0' });
 
+                            }
+                        });
                         break;
                     case 'del':
-                        layer.msg('删除');
+
+                        //ajax事件
+                        layer.confirm("确定要删除嘛？", { icon: 3 }, function (index2) {
+                            var index = layer.load();
+                            var token = $.cookie("token");
+                            //删除ajax
+                            $.ajax({
+                                url: baseUrl + '/api/permissions/del?permissionIDs=' + obj.data.id,
+                                type: 'delete',
+                                contentType: "application/json",
+                                headers: { "Authorization": "Bearer " + token },
+                                success: function (res) {
+                                    layer.close(index);
+
+                                    layer.msg("删除成功！共删除了" + res + "条数据！", { icon: 1 }, function () {
+                                        //表格重载
+                                        insTb.reload({ url: baseUrl + '/api/permissions/0' });
+                                        //表格重载
+                                        layui.use(['table'], function () {
+                                            var table = layui.table; //where可以传我们像传的任何参数
+                                            table.reload("DeletePermissionTable", { url: baseUrl + '/api/permissions/delList' });
+                                        });
+                                    });
+                                }
+
+                            }).fail(function () {
+                                layer.close(index);
+                            })//类别下拉框
+
+                            layer.close(index2);
+                        });
+
                         break;
                 }
             });
@@ -95,20 +232,69 @@
             treeTable.on('toolbar(demoTreeTb)', function (obj) {
                 switch (obj.event) {
                     case 'add':
-                        layer.msg('添加');
+                        layer.open({
+                            type: 2,
+                            title: '新增权限',
+                            shadeClose: true,
+                            shade: false,
+                            maxmin: true, //开启最大化最小化按钮
+                            area: ['493px', '480px'],
+                            content: '/Home/AddPermission?permissionID=0&permissionName=""',
+                            end: function () {
+                                insTb.reload({ url: baseUrl + '/api/permissions/0' });
+                            }
+                        });
                         break;
-                    case 'delete':
-                        layer.msg('删除');
+                    case 'del':
+                        //获取选中数据
+                        var data = insTb.checkStatus();
+                        //拿到选中的所有id
+                        var idsarr = [];
+
+                        for (var i = 0; i < data.length; i++) {
+                            idsarr.push(data[i].id);
+                        }
+                        if (idsarr.length == 0) {
+                            layer.msg("请至少选中一个！", { icon: 2 });
+                            return;
+                        }
+
+                        //ajax事件
+                        layer.confirm("确定要删除嘛？对应的父节点也将会被删除！", { icon: 3 }, function (index2) {
+                            var index = layer.load();
+                            var token = $.cookie("token");
+                            //删除ajax
+                            $.ajax({
+                                url: baseUrl + '/api/permissions/del?permissionIDs=' + idsarr.toString(),
+                                type: 'delete',
+                                contentType: "application/json",
+                                headers: { "Authorization": "Bearer " + token },
+                                success: function (res) {
+                                    layer.close(index);
+
+                                    layer.msg("删除成功！共删除了" + res + "条数据！", { icon: 1 }, function () {
+                                        //表格重载
+                                        insTb.reload({ url: baseUrl + '/api/permissions/0' });
+                                        //表格重载
+                                        layui.use(['table'], function () {
+                                            var table = layui.table; //where可以传我们像传的任何参数
+                                            table.reload("DeletePermissionTable", { url: baseUrl + '/api/permissions/delList' });
+                                        });
+                                    });
+                                }
+
+                            }).fail(function () {
+                                layer.close(index);
+                            })//类别下拉框
+
+                            layer.close(index2);
+                        });
                         break;
-                    case 'update':
-                        layer.msg('编辑');
-                        break;
-                 
                 }
             });
 
 
-         
+
             $("#RoleID").change(function () {
                 var value = $("#RoleID").val();
                 //重载
@@ -118,7 +304,7 @@
             //保存按钮事件
             $("#SaceBtn").click(function () {
                 var value = $("#RoleID").val();
-                if (value==0) {
+                if (value == 0) {
                     layer.msg("请选择要分配的角色！", { icon: 2 });
                     return;
                 }
@@ -142,19 +328,19 @@
                     var token = $.cookie("token");
                     //删除ajax
                     $.ajax({
-                        url: baseUrl + '/api/permissions/edit/' + value +'?permissionIDs=' + idsarr.toString(),
+                        url: baseUrl + '/api/permissions/edit/' + value + '?permissionIDs=' + idsarr.toString(),
                         type: 'get',
                         contentType: "application/json",
                         headers: { "Authorization": "Bearer " + token },
                         success: function (res) {
                             layer.close(index);
                             if (res.code == 0) {
-                                layer.msg(res.msg,{ icon: 1 }, function () {
+                                layer.msg(res.msg, { icon: 1 }, function () {
                                     //表格重载
                                     insTb.reload({ url: baseUrl + '/api/permissions/' + value });
                                 })
                             } else {
-                                layer.msg(res.msg,{ icon: 2 } )
+                                layer.msg(res.msg, { icon: 2 })
                             }
                         }
 
@@ -168,10 +354,137 @@
 
 
 
- 
+
             })
         });
-    
+
+
+        //删除的权限表格
+        layui.use(['table', 'laydate'], function () {
+            var token = $.cookie("token");
+            var table = layui.table;
+            var laydate = layui.laydate;
+            laydate.render({
+                elem: "#StartTimeByFind",
+                type: "datetime"
+            })
+            laydate.render({
+                elem: "#EndTimeByFind",
+                type: "datetime"
+            })
+
+            //表格渲染
+            table.render({
+                elem: '#DeletePermissionTable'
+                , url: baseUrl + '/api/permissions/delList'  //数据接口
+                , headers: { "Authorization": "Bearer " + token }
+                , cols: [[ //表头
+                    { type: 'checkbox' },
+                    { field: 'name', title: '菜单名称' },
+                    { field: 'url', title: '菜单地址' },
+                    { field: 'createTime', title: '创建时间' },
+                    { field: 'id', title: '编号', width: 80 },
+                    { field: 'pid', title: '父级编号', width: 100 },
+                    { align: 'center', toolbar: '#tool', title: '操作' }
+                ]]
+                , page: true
+                , defaultToolbar: ['filter', 'exports']
+                , toolbar: '#toolbarDelete'
+            });
+
+            table.on('tool(table)', function (obj) {
+
+                switch (obj.event) {
+                    case 'old':
+                        layer.confirm("确定要还原嘛？", { icon: 3 }, function (index2) {
+                            var index = layer.load();
+                            var token = $.cookie("token");
+                            //删除ajax
+                            $.ajax({
+                                url: baseUrl + '/api/permissions/del?permissionIDs=' + obj.data.id,
+                                type: 'delete',
+                                contentType: "application/json",
+                                headers: { "Authorization": "Bearer " + token },
+                                success: function (res) {
+                                    layer.close(index);
+
+                                    layer.msg("还原成功！共还原了" + res + "条数据！", { icon: 1 }, function () {
+                                        //表格重载
+                                        insTb.reload({ url: baseUrl + '/api/permissions/0' });
+                                        //表格重载
+                                        layui.use(['table'], function () {
+                                            var table = layui.table; //where可以传我们像传的任何参数
+                                            table.reload("DeletePermissionTable", { url: baseUrl + '/api/permissions/delList' });
+                                        });
+                                    });
+                                }
+
+                            }).fail(function () {
+                                layer.close(index);
+                            })//类别下拉框
+
+                            layer.close(index2);
+                        });
+
+                        break;
+                    default:
+                }
+            });
+
+            table.on('toolbar(table)', function (obj) {
+                var checkStatus = table.checkStatus('DeletePermissionTable');
+                var data = checkStatus.data;
+                switch (obj.event) {
+                    case 'old':
+
+                        //拿到选中的所有id
+                        var idsarr = [];
+
+                        for (var i = 0; i < data.length; i++) {
+                            idsarr.push(data[i].id);
+                        }
+                        if (idsarr.length == 0) {
+                            layer.msg("请至少选中一个！", { icon: 2 });
+                            return;
+                        }
+
+                        layer.confirm("确定要还原嘛？", { icon: 3 }, function (index2) {
+                            var index = layer.load();
+                            var token = $.cookie("token");
+                            //删除ajax
+                            $.ajax({
+                                url: baseUrl + '/api/permissions/del?permissionIDs=' + idsarr.toString(),
+                                type: 'delete',
+                                contentType: "application/json",
+                                headers: { "Authorization": "Bearer " + token },
+                                success: function (res) {
+                                    layer.close(index);
+
+                                    layer.msg("还原成功！共还原了" + res + "条数据！", { icon: 1 }, function () {
+                                        //表格重载
+                                        insTb.reload({ url: baseUrl + '/api/permissions/0' });
+                                        //表格重载
+                                        layui.use(['table'], function () {
+                                            var table = layui.table; //where可以传我们像传的任何参数
+                                            table.reload("DeletePermissionTable", { url: baseUrl + '/api/permissions/delList' });
+                                        });
+                                    });
+                                }
+
+                            }).fail(function () {
+                                layer.close(index);
+                            })//类别下拉框
+
+                            layer.close(index2);
+                        });
+
+                        break;
+                    default:
+                }
+            });
+
+        });
+
 
     </script>
 
