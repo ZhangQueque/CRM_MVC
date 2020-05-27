@@ -50,7 +50,7 @@
             var icon = $("#Icon").val();
             var url = $("#Url").val();
             var pid = parseInt('@ViewBag.ID');
-
+            console.log(pid)
             if (name.trim().length == 0) {
                 layer.msg("菜单名称不能为空！", { icon: 2 });
                 return;
