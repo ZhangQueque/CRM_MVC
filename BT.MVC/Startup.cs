@@ -25,7 +25,7 @@ namespace BT.MVC
         {
             services.AddControllersWithViews();
 
-            services.AddHttpClient("api",options=>options.BaseAddress=new Uri("https://localhost:44356/"));
+            services.AddHttpClient("api",options=>options.BaseAddress=new Uri(Configuration["Api"]));
     
         }
 
