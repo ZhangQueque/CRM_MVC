@@ -143,7 +143,28 @@
                 ;
                 switch (obj.event) {
                     case 'add':
-                        location.href = '/Home/AddEmployee';
+                        layer.open({
+                            type: 2,
+                            title: '添加员工',
+                            shadeClose: true,
+                            shade: false,
+                            maxmin: true, //开启最大化最小化按钮
+                            area: ['893px', '600px'],
+                            content: '/Home/AddEmployee?active=1',
+                            end: function () {
+                                //表格重载
+                                layui.use(['table'], function () {
+                                    var table = layui.table; //where可以传我们像传的任何参数
+                                    table.reload("NoRealCustomer", {
+                                        url: baseUrl + '/api/employees/employeePage', where: {
+                                            headers: { "Authorization": "Bearer " + token }
+                                        }
+                                    });
+                                });
+
+                            }
+                        });
+
                         break;
                     case 'delete':  //删除
                         if (true) {

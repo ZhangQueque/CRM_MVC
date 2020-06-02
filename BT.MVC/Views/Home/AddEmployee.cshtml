@@ -4,14 +4,20 @@
 }
 
 
-    <div class="box box-warning ">
-        <div class="box-header with-border">
-            <i class="fa fa-user-plus  text-warning"></i>
-            <h3 class="box-title">添加员工</h3>
-        </div><!-- /.box-header -->
-        <div class="box-body">
-            <div class="nav-tabs-custom">
-                <div class="tab-content">
+<div class="box box-warning ">
+    <div class="box-header with-border">
+        <i class="fa fa-user-plus  text-warning"></i>
+        <h3 class="box-title">添加员工</h3>
+    </div><!-- /.box-header -->
+    <div class="box-body">
+
+        <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="#tab_1" data-toggle="tab" aria-expanded="true">单个新增</a></li>
+                <li class=""><a href="#tab_2" data-toggle="tab" aria-expanded="false">批量导入</a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="tab_1">
                     <!-- 新建 -->
                     <div class="box box-default">
 
@@ -33,7 +39,7 @@
                                         </div>
                                     </div>
 
-                                   
+
                                 </div>
 
 
@@ -74,18 +80,211 @@
                             </div>
                         </form>
                     </div><!-- 新建 -->
-                   
-                     
+
+                </div>
+                <div class="tab-pane" id="tab_2">
+                    <form role="form" id="ExcelFrom">
+                        <span class="btn btn-success " id="UploadSpan" type="button">
+                            <i class="layui-icon">&#xe67c;</i>选择Excel
+                            <input type="file" id="UploadFile" name="UploadFile" class="UploadFile" style="width:100px" />
+                        </span>
+                        <button class="btn btn-warning" id="ExcelButton" type="button">上传</button>
+                        <span style="margin-left:10px" id="Msg">您还未选中文件！</span>
+                    </form>
+
+                    <table id="ExcelTable"></table>
+
+                    <div>
+                        <button class="btn btn-danger" id="AddButton">
+                            <i class="layui-icon layui-icon-add-1"></i>
+                            批量添加
+                        </button>
+                    </div>
                 </div>
 
             </div>
         </div>
+
+
+
     </div>
+</div>
 
 @section scripts
 {
-    <script>
 
+
+
+    <script>
+        $("#AddButton").click(function () {
+            layer.confirm("确定要批量添加吗？", { icon: 3 }, function () {
+
+                $.ajax({
+                    url: baseUrl + "/api/excels/employee_excel_create",
+                    type: "get",
+                    contentType: "application/json",
+                    headers: { "Authorization": "Bearer " + token },
+
+                    success: function (res) {
+                        layer.msg("批量添加成功！", { icon: 1 }, function () {
+
+                            $("#AddButton").hide();
+
+                            $("#ExcelTable").hide();
+                        });
+
+                    }
+
+
+                }).fail(function () {
+
+                    layer.msg("请检查文件内容格式！", { icon: 2 });
+                    return;
+                });
+
+            })
+
+        });
+
+        $(function () {
+            $("#AddButton").hide();
+
+            $("#ExcelTable").hide();
+        })
+        var fileInfo = null;
+        //_________________________________Excel文件上传____________________________________________
+
+        $("#ExcelButton").click(function () {
+            var formdata = new FormData($("#ExcelFrom")[0]);
+            var token = $.cookie("token");
+            if (fileInfo == null) {
+                layer.msg("不能上传空文件！", { icon: 2 });
+                return;
+            }
+            if (fileInfo.length == undefined) {
+                layer.msg("不能上传空文件！", { icon: 2 });
+                return;
+            }
+
+
+            if (fileInfo.length == 0) {
+                layer.msg("不能上传空文件！", { icon: 2 });
+                return;
+            }
+            console.log(fileInfo[0].type)
+            if (fileInfo[0].type != "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
+                layer.msg("请上传xlsx文件！", { icon: 2 });
+                return;
+            }
+            $.ajax({
+                url: baseUrl + "/api/excels/employee_excel",
+                type: "post",
+                data: formdata,
+                contentType: false,
+                headers: { "Authorization": "Bearer " + token },
+                cache: false,
+                processData: false,
+                success: function (res) {
+                    if (res.code == 1) {
+                        layer.msg("请检查文件内容格式！", { icon: 2 });
+                        return;
+                    }
+                    if (res.code == 0) {
+                        layer.msg("数据检查成功，请查阅表格！", { icon: 1 }, function () {
+                            $("#AddButton").show();
+
+                            $("#ExcelTable").show();
+                            layui.use(['table', 'form', 'laydate'], function () {
+                                var token = $.cookie("token");
+                                var laydate = layui.laydate;
+
+                                var table = layui.table;
+
+
+                                //表格渲染
+                                table.render({
+                                    elem: '#ExcelTable'
+                                    , url: baseUrl + '/api/excels/employee_excel_layui'
+
+                                    , headers: { "Authorization": "Bearer " + token }
+                                    , cols: [[ //表头
+                                        { type: "checkbox" }
+                                        , { field: 'name', title: '员工姓名' }
+                                        , { field: 'email', title: '联系邮箱' }
+                                        , { field: 'phone', title: '联系电话' }
+                                        , { field: 'headImage', title: '员工Logo' }
+                                    ]]
+                                    , page: true
+                                    , toolbar: "#toolbar"
+                                    , defaultToolbar: ['filter', 'exports']
+                                });
+
+
+
+                            });
+
+                        });
+                        console.log(res.data)
+
+
+
+
+
+                        return;
+
+
+                    }
+                }
+
+
+            }).fail(function () {
+                layer.msg("请检查文件内容格式！", { icon: 2 });
+                return;
+
+            });
+
+        });
+
+
+
+        $(".UploadFile").change(function (e) {
+
+            fileInfo = e.currentTarget.files;
+
+            if (fileInfo.length == 0) {
+                $("#Msg").text("您还未选中文件！");
+            } else {
+                var name = fileInfo[0].name;
+
+                $("#Msg").text("选中了：" + name);
+            }
+
+
+        });
+
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <script>
+        $(function () {
+            if ('@ViewBag.Active'=="1") {
+                $("#LayoutBody").addClass("sidebar-collapse");
+
+            }
+
+        });
         //——————————————————员工创建(添加成功后的相关操作)——————————————————————————————————————
 
         //创建员工
@@ -159,7 +358,7 @@
                         var line = '<option value="' + this.id + '">' + this.name + '</option>';
                         $("#EmployeeIDByFind").append(line);
                     });
-                } 
+                }
             }
 
         }).fail(function () {
