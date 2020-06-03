@@ -1,5 +1,5 @@
-﻿var baseUrl = "https://localhost:44356";
-//var baseUrl = "http://47.92.200.14:5002";
+﻿//var baseUrl = "https://localhost:44356";
+var baseUrl = "http://47.92.200.14:5002";
 
 $(function () {
     //增加网站访问量
