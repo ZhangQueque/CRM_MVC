@@ -47,7 +47,7 @@ function Tree(pid, arr) {
                 var list = GetData(childdata[i].id, arr);
                 if (list.length == 0) {
                     htmlStr += '<li class="treeview ' + classValue+'">'
-                        + '<a href="' + childdata[i].url + '?active=' + childdata[i].activeName+'">'
+                        + '<a href="' + childdata[i].url + '">'
                         + '<i class="' + childdata[i].icon+'"></i> <span>' + childdata[i].name + '</span>'
                         + ' </a>'
                     Tree(childdata[i].id, arr);
@@ -56,7 +56,7 @@ function Tree(pid, arr) {
                 else {
 
                     htmlStr += '<li class="treeview  ' + classValue +'">'
-                        + ' <a href="#?active=' + childdata[i].activeName +'">'
+                        + ' <a href="# ">'
                         + '<i class="' + childdata[i].icon +'"></i><span>' + childdata[i].name + '</span>'
                         + ' <i class="fa fa-angle-left pull-right"></i>'
                         + ' </a>'
@@ -79,7 +79,7 @@ function Tree(pid, arr) {
             var list = GetData(childdata[i].id, arr);
             if (list.length == 0) {
                 htmlStr += '<li class="treeview   ' + classValue +'">'
-                    + '<a href="' + childdata[i].url + '?active=' + childdata[i].activeName +'">'
+                    + '<a href="' + childdata[i].url + '">'
                     + '<i class="' + childdata[i].icon +'"></i> <span>' + childdata[i].name + '</span>'
                     + ' </a>'
                 Tree(childdata[i].id, arr);
@@ -87,8 +87,8 @@ function Tree(pid, arr) {
             }
             else {
 
-                htmlStr += '<li class="treeview    ' + classValue +'">'
-                    + ' <a href="#?active=' + childdata[i].activeName +'">'
+                htmlStr += '<li class="treeview ' + classValue +'">'
+                    + ' <a href="#">'
                     + '<i class="' + childdata[i].icon +'"></i><span>' + childdata[i].name + '</span>'
                     + ' <i class="fa fa-angle-left pull-right"></i>'
                     + ' </a>'

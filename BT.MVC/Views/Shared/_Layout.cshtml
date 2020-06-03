@@ -302,5 +302,25 @@
     <script src="~/js/adminLTETree.js"></script>
     <script src="~/jquery.cookie.js"></script>
     @RenderSection("Scripts", required: false)
+
+    <script>
+        function Chat() {
+            var name = $("#UserNameHeaderNav1").text();
+
+            layer.open({
+                type: 2,
+                title: '视频聊天',
+                shadeClose: true,
+                shade: false,
+                maxmin: true, //开启最大化最小化按钮
+                area: ['1299px', '680px'],
+                content: '/Home/VideoChat?name=' + name,
+                end: function () {
+                 
+                }
+            });
+            
+        }
+    </script>
 </body>
 </html>

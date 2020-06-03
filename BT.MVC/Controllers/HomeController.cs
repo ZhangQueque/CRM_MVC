@@ -381,7 +381,27 @@ namespace BT.MVC.Controllers
         #endregion
 
 
+        /// <summary>
+        /// 视频聊天
+        /// </summary>
+        /// <param name="active"></param>
+        /// <returns></returns>
+        public IActionResult VideoChat(string active,string name)
+        {
+            ViewBag.Name = name;
+            ViewBag.Active = active;
+            var token = Request.Cookies["token"];
+            if (token == null)
+            {
+                return RedirectToAction("Login");
+            }
 
+            if (token == "null")
+            {
+                return RedirectToAction("Login");
+            }
+            return View();
+        }
 
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

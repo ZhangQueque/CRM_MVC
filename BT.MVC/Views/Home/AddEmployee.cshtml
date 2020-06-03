@@ -180,8 +180,9 @@
                 url: baseUrl + "/api/excels/employee_excel",
                 type: "post",
                 data: formdata,
-                contentType: false,
                 headers: { "Authorization": "Bearer " + token },
+                contentType: false,
+
                 cache: false,
                 processData: false,
                 success: function (res) {
