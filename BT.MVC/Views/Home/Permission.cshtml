@@ -200,7 +200,7 @@
                             //删除ajax
                             $.ajax({
                                 url: baseUrl + '/api/permissions/del?permissionIDs=' + obj.data.id,
-                                type: 'delete',
+                                type: 'get',
                                 contentType: "application/json",
                                 headers: { "Authorization": "Bearer " + token },
                                 success: function (res) {
@@ -266,7 +266,7 @@
                             //删除ajax
                             $.ajax({
                                 url: baseUrl + '/api/permissions/del?permissionIDs=' + idsarr.toString(),
-                                type: 'delete',
+                                type: 'get',
                                 contentType: "application/json",
                                 headers: { "Authorization": "Bearer " + token },
                                 success: function (res) {
@@ -402,7 +402,7 @@
                             //删除ajax
                             $.ajax({
                                 url: baseUrl + '/api/permissions/del?permissionIDs=' + obj.data.id,
-                                type: 'delete',
+                                type: 'get',
                                 contentType: "application/json",
                                 headers: { "Authorization": "Bearer " + token },
                                 success: function (res) {
@@ -454,7 +454,7 @@
                             //删除ajax
                             $.ajax({
                                 url: baseUrl + '/api/permissions/del?permissionIDs=' + idsarr.toString(),
-                                type: 'delete',
+                                type: 'get',
                                 contentType: "application/json",
                                 headers: { "Authorization": "Bearer " + token },
                                 success: function (res) {

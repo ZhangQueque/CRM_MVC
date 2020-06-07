@@ -178,7 +178,7 @@
                                 //删除ajax
                                 $.ajax({
                                     url: baseUrl + '/api/roles/delroles?ids=' + idsarr.toString(),
-                                    type: 'delete',
+                                    type: 'get',
                                     contentType: "application/json",
                                     headers: { "Authorization": "Bearer " + token },
                                     success: function (res) {
