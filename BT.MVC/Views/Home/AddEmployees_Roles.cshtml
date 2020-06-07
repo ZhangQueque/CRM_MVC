@@ -1,0 +1,131 @@
+﻿
+@{
+    ViewData["Title"] = "AddEmployees_Roles";
+}
+
+    <div class="box box-aqua ">
+        <div class="box-header with-border">
+            <i class="fa fa-user-secret  text-aqua"></i>
+            <h3 class="box-title">添加角色分配</h3>
+        </div><!-- /.box-header -->
+        <div class="box-body" id="demoTreeTb">
+            <div class="row" style="margin-top:5px">
+                <div class="col-md-3 form-group">
+                    <label>员工</label>
+                    <select class="form-control" id="EmployeeID" name="EmployeeID" >
+                    </select>
+                </div>
+
+            </div>  <!-- 查询栏 -->
+
+            <div class="row" style="margin-top:5px">
+
+                <div class="col-md-3 form-group">
+                    <label>角色</label>
+                    <select class="form-control" id="RoleID" name="RoleID" >
+                    </select>
+                </div>
+            </div>  <!-- 查询栏 -->
+
+            <div class="row" style="margin-top:5px">
+
+                <div class="col-md-3 form-group">
+                    <button class="  btn btn-block  btn-info"  onclick="Create()">确认分配</button>
+
+                </div>
+
+            </div>  <!-- 查询栏 -->
+        </div><!-- /.box-body -->
+    </div>
+
+
+@section Scripts{ 
+    <script>
+
+        function Create() {
+            var index4 = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+
+            var index = layer.load();
+            var empID = $("#EmployeeID").val();
+            var roleID = $("#RoleID").val();
+            $.ajax({
+                url: baseUrl +'/api/employees_roles',
+                type: 'post',
+                data: JSON.stringify({ EmployeeID: parseInt(empID), RoleID: parseInt(roleID) }),
+                contentType: 'application/json',
+                success: function (res) {
+                    layer.close(index);
+
+                    if (res.code == 1) {
+                        layer.msg(res.msg, { icon: 2 }, function () {
+
+                        });
+                    } else {
+                        layer.msg(res.msg, { icon: 1 }, function () {
+                            parent.layer.close(index4); //再执行关闭   
+
+                        });
+                    }
+
+                }
+            }).fail(function () {
+
+                layer.close(index);
+            });
+        };
+
+           $(function () {
+             
+                $("#LayoutBody").addClass("sidebar-collapse");
+
+
+               var token = $.cookie("token");
+
+               //员工下拉框
+               $.ajax({
+                   url: baseUrl + '/api/employees/employee',
+                   type: 'get',
+                   contentType: "application/json",
+                   headers: { "Authorization": "Bearer " + token },
+                   success: function (res) {
+                       customerArr = res;
+
+                       $("#EmployeeID").empty();
+                       $("#EmployeeID").append('<option value="0">请选择</option>');
+                       $(res).each(function () {
+                           var line = '<option value="' + this.id + '">' + this.name + '</option>';
+                           $("#EmployeeID").append(line);
+                       });
+
+                   }
+
+               }).fail(function () {
+                   layer.close(index);
+               }) //员工下拉框
+
+
+
+               //角色下拉框
+               $.ajax({
+                   url: baseUrl + '/api/roles',
+                   type: 'get',
+                   contentType: "application/json",
+                   headers: { "Authorization": "Bearer " + token },
+                   success: function (res) {
+                       customerArr = res;
+
+                       $("#RoleID").empty();
+                       $("#RoleID").append('<option value="0">请选择</option>');
+                       $(res).each(function () {
+                           var line = '<option value="' + this.id + '">' + this.name + '</option>';
+                           $("#RoleID").append(line);
+                       });
+
+                   }
+
+               }).fail(function () {
+                   layer.close(index);
+               }) //角色下拉框
+           });
+    </script>
+}

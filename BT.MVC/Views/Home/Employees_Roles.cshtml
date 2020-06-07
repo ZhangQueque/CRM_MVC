@@ -4,10 +4,10 @@
 }
 
 
-<div class="box box-danger ">
+<div class="box box-aqua ">
     <div class="box-header with-border">
-        <i class="fa fa-users  text-danger"></i>
-        <h3 class="box-title">角色分配</h3>
+        <i class=" fa fa-user-secret  text-aqua"></i>
+        <h3 class="box-title">所有角色分配</h3>
     </div><!-- /.box-header -->
     <div class="box-body" id="demoTreeTb">
         <div class="nav-tabs-custom">
@@ -46,13 +46,13 @@
         </div>
     </div><!-- /.box-body -->
 </div>
-<!-- 表格操作列 -->
-<script type="text/html" id="tbBar">
-    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="add">添加</a>
-    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="edit">修改</a>
-    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+<script type="text/html" id="toolbar">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-primary layui-btn-sm" lay-event="add" title="添加"><i class="layui-icon layui-icon-add-1 "></i></button>
+        <button class="layui-btn layui-btn-danger layui-btn-primary layui-btn-sm" lay-event="delete" title="删除"><i class="layui-icon layui-icon-delete"></i></button>
+        @*<button class="layui-btn layui-btn-warm layui-btn-sm" lay-event="edit" title="修改"><i class="layui-icon layui-icon-edit"></i></button>*@
+    </div>
 </script>
-
 @section Scripts{
 
 
@@ -92,8 +92,7 @@
                     , { field: 'employeeName', title: '员工姓名' }
                     , { field: 'roleName', title: '当前角色' }
                     , { field: 'createTime', title: '创建时间' }
-                    ,{ align: 'center', toolbar: '#tbBar', title: '操作' }
-                ]]
+                 ]]
                 , page: true
                 , toolbar: "#toolbar"
                 , defaultToolbar: ['filter', 'exports']
@@ -102,12 +101,34 @@
 
             //监听事件
             table.on('toolbar(table)', function (obj) {
-                var checkStatus = table.checkStatus("NoRealCustomer"); //获取表格选中的行
+                var checkStatus = table.checkStatus("Employees_role"); //获取表格选中的行
                 var data = checkStatus.data;//获取选中数据
-                ;
+       
                 switch (obj.event) {
-                    case 'addLinkMan':
-                        layer.msg('添加角色');
+                    case 'add':
+                     
+                        layer.open({
+                            type: 2,
+                            title: '角色分配',
+                            shadeClose: true,
+                            shade: false,
+                            maxmin: true, //开启最大化最小化按钮
+                            area: ['493px', '450px'],
+                            content: '/Home/AddEmployees_Roles',
+                            end: function () {
+                                //表格重载
+                                layui.use(['table'], function () {
+                                    var table = layui.table; //where可以传我们像传的任何参数
+                                    table.reload("Employees_role", {
+                                        url: baseUrl + '/api/employees_roles/employees_role' , where: {
+                                            headers: { "Authorization": "Bearer " + token }
+                                        }
+                                    });
+                                });
+
+                            }
+                        });
+
                         break;
                     case 'delete':  //删除
                         if (true) {
@@ -127,8 +148,8 @@
                                 var token = $.cookie("token");
                                 //删除ajax
                                 $.ajax({
-                                    url: baseUrl + '/api/customers/delete?ids=' + idsarr.toString(),
-                                    type: 'delete',
+                                    url: baseUrl + '/api/employees_roles/delete?ids=' + idsarr.toString(),
+                                    type: 'get',
                                     contentType: "application/json",
                                     headers: { "Authorization": "Bearer " + token },
                                     success: function (res) {
@@ -138,8 +159,8 @@
                                             //表格重载
                                             layui.use(['table'], function () {
                                                 var table = layui.table; //where可以传我们像传的任何参数
-                                                table.reload("NoRealCustomer", {
-                                                    url: baseUrl + '/api/employees_roles/employees_role?status=0', where: {
+                                                table.reload("Employees_role", {
+                                                    url: baseUrl + '/api/employees_roles/employees_role', where: {
                                                         headers: { "Authorization": "Bearer " + token }
                                                     }
                                                 });
@@ -158,11 +179,8 @@
 
                         }
                         break;
-                    case 'update':  //修改
-                        {
-
-
-                        }
+                    case 'edit':  //修改
+                       
                         break;
                     
                 };

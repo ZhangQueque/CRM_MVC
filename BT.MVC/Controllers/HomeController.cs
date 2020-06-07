@@ -311,6 +311,40 @@ namespace BT.MVC.Controllers
             }
             return View();
         }
+
+
+        public IActionResult AddEmployees_Roles(string active)
+        {
+            ViewBag.Active = active;
+            var token = Request.Cookies["token"];
+            if (token == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            if (token == "null")
+            {
+                return RedirectToAction("Login");
+            }
+            return View();
+        }
+
+
+        public IActionResult EditEmployees_Roles(string active,int id)
+        {
+            ViewBag.Active = active;
+            var token = Request.Cookies["token"];
+            if (token == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            if (token == "null")
+            {
+                return RedirectToAction("Login");
+            }
+            return View();
+        }
         #endregion
 
 
