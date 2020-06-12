@@ -437,6 +437,62 @@ namespace BT.MVC.Controllers
             return View();
         }
 
+        /// <summary>
+        /// 在线聊天
+        /// </summary>
+        /// <param name="active"></param>
+        /// <returns></returns>
+        public IActionResult SigNalRChat(string active )
+        {
+            
+            ViewBag.Active = active;
+            var token = Request.Cookies["token"];
+            if (token == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            if (token == "null")
+            {
+                return RedirectToAction("Login");
+            }
+            return View();
+        }
+        /// <summary>
+        /// 在线聊天
+        /// </summary>
+        /// <param name="active"></param>
+        /// <returns></returns>
+        public IActionResult SigNalRChat2( string name,string img)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                return RedirectToAction("Login");
+            }
+            ViewBag.User = name;
+            ViewBag.Img = img;
+            var token = Request.Cookies["token"];
+            if (token == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            if (token == "null")
+            {
+                return RedirectToAction("Login");
+            }
+            return View();
+        }
+
+
+        public IActionResult ShowTime( )
+        {
+
+          
+            return View();
+        }
+
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

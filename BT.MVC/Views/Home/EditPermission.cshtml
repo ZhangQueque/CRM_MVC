@@ -66,8 +66,8 @@
                 var index = layer.load();
                 var token = $.cookie("token");
                 $.ajax({
-                    url: baseUrl + '/api/permissions/' + id,
-                    type: 'put',
+                    url: baseUrl + '/api/permissions/editnew?permissionID=' + id,
+                    type: 'post',
                     contentType: "application/json",
                     data: JSON.stringify({ Name: name, Icon: icon, Url: url, PID: pid }),
                     headers: { "Authorization": "Bearer " + token },

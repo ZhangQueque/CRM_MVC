@@ -1,9 +1,9 @@
 ﻿var htmlStr = "";
 
 var htmlStr2 = '<li class="header">LABELS</li>'
-    + '<li> <a href="#"><i class="fa fa-circle-o text-red"></i> <span>关于我们</span></a></li>'
-    + '<li><a href="#"><i class="fa fa-circle-o text-yellow"></i> <span>立即联系</span></a></li>'
-    + '<li><a href="#"><i class="fa fa-circle-o text-aqua"></i> <span>BossTeam</span></a></li>';
+    + '<li> <a target="_blank" href="https://github.com/orgs/BossTeam2020/dashboard"><i class="fa fa-circle-o text-red"></i> <span>关于我们</span></a></li>'
+    + '<li><a target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin=3393597524&site=qq&menu=yes" ><i class="fa fa-circle-o text-yellow"></i> <span>立即联系</span></a></li>'
+    + '<li><a href="/Home/ShowTime"><i class="fa fa-circle-o text-aqua"></i> <span>BossTeam</span></a></li>';
 
 //初始化用户信息
 $(function () {

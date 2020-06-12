@@ -19,10 +19,11 @@
          folder instead of downloading all of them to reduce the load. -->
     <link href="~/AdminLTE-2.1.1/dist/css/skins/_all-skins.min.css" rel="stylesheet" type="text/css" />
     <link href="~/layui/css/layui.css" rel="stylesheet" />
+    
     <style>
 
         #UploadSpan {
-            position:relative;
+            position: relative;
         }
 
         #UploadFile2 {
@@ -31,14 +32,33 @@
             top: 0px;
             opacity: 0;
             -ms-filter: 'alpha(opacity=0)';
-            font-size:23px
+            font-size: 23px
+        }
+
+        #SignalRChatBtnParentDiv {
+            position: relative;
+        }
+
+        #SignalRChatBtn {
+            position: absolute;
+            right: 0px;
+            top: 500px;
+          
+            -ms-filter: 'alpha(opacity=0)';
+            
+        }
+        #SignalRChatBtn2 {
+            position: absolute;
+            right: 0px;
+            top: 540px;
+            -ms-filter: 'alpha(opacity=0)';
         }
     </style>
 </head>
-<body id="LayoutBody" class="skin-black-light sidebar-mini  ">
+<body id="LayoutBody" class="skin-black-light sidebar-mini  " >
 
 
-    <div class="wrapper">
+    <div class="wrapper" >
 
         <header class="main-header">
             <!-- 后台模板名称-->
@@ -195,16 +215,16 @@
                                 </li>
                                 <!-- Menu Body -->
                                 @*<li class="user-body">
-                                        <div class="col-xs-4 text-center">
-                                            <a href="#">修改资料</a>
-                                        </div>
-                                        <div class="col-xs-4 text-center">
-                                            <a href="#">更改密码</a>
-                                        </div>
-                                        <div class="col-xs-4 text-center">
-                                            <a href="#">联系作者</a>
-                                        </div>
-                                    </li>*@
+                                    <div class="col-xs-4 text-center">
+                                        <a href="#">修改资料</a>
+                                    </div>
+                                    <div class="col-xs-4 text-center">
+                                        <a href="#">更改密码</a>
+                                    </div>
+                                    <div class="col-xs-4 text-center">
+                                        <a href="#">联系作者</a>
+                                    </div>
+                                </li>*@
                                 <!-- Menu Footer-->
                                 <!-- 按钮事件-->
                                 <li class="user-footer">
@@ -258,16 +278,20 @@
         </aside>
 
         <!-- 内容区域 -->
-        <div class="content-wrapper">
+        <div class="content-wrapper" id="SignalRChatBtnParentDiv">
             @RenderBody()
+            <button class="btn btn-default" id="SignalRChatBtn"><i class="fa fa-weixin text-green"></i></button>
+            <a target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin=3393597524&site=qq&menu=yes" class="btn btn-default" id="SignalRChatBtn2" style="width:42px;height:34px"><i class="fa fa-question text-primary"style="font-size:18px"></i></a>
+
         </div><!-- /.content-wrapper -->
+
         <footer class="main-footer">
             <div class="pull-right hidden-xs">
                 <b>Version</b> 2.0
-            </div>
-            <strong>Copyright &copy; 2020 <a href="http://beian.miit.gov.cn">晋ICP备20002472号-1</a>.</strong> 缺缺作品
-        </footer>
 
+            </div>
+            <strong>Copyright &copy; 2020 <a href="http://beian.miit.gov.cn">晋ICP备20002472号-1</a>.</strong> BossTeam作品
+        </footer>
 
         <!-- 设置，修改demo.js -->
         <aside class="control-sidebar control-sidebar-dark">
@@ -301,7 +325,30 @@
     <script src="~/layui/layui.js"></script>
     <script src="~/js/adminLTETree.js"></script>
     <script src="~/jquery.cookie.js"></script>
+    <script src="~/aspnet-signalr/signalr.js"></script>
     @RenderSection("Scripts", required: false)
+
+
+    <script>
+   
+
+        $("#SignalRChatBtn").click(() => {
+            var user = $("#UserNameHeaderNav1").text();;
+             var img = $("#UserImgHeaderNav1").prop('src');
+            layer.open({
+                type: 2,
+                title: '在线聊天',
+                shadeClose: true,
+                shade: false,
+                maxmin: true, //开启最大化最小化按钮
+                area: ['650px', '400px'],
+                content: ['/Home/SigNalRChat2?name=' + user + '&img=' + img,'no']
+            });
+
+        });
+
+       
+    </script>
 
     <script>
         function Chat() {
@@ -316,10 +363,10 @@
                 area: ['1299px', '680px'],
                 content: '/Home/VideoChat?name=' + name,
                 end: function () {
-                 
+
                 }
             });
-            
+
         }
     </script>
 </body>

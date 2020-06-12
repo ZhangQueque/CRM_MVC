@@ -92,43 +92,11 @@
 
 
         <div class="row" style="margin-top:16px">
-            <div class="col-md-7">
+            <div class="col-md-9">
                 <div id="CustomerContainer" style="height: 400px"></div>
 
             </div>
-            <div class="col-md-5">
-
-                <div class="box box-primary">
-                    <div class="box-header with-border">
-                        <h3 class="box-title">当日日程</h3>
-                        <div class="box-tools pull-right">
-                            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
-                        </div>
-                    </div><!-- /.box-header -->
-                    <div class="box-body" style="display block;overflow:auto;height:318px">
-                        <ul class="products-list product-list-in-box">
-                            @for (int i = 0; i < 6; i++)
-                            {
-                                <li class="item">
-                                    <div class="product-img">
-                                        <img src="https://www.zhangqueque.top:5001/UserImg/1_1_1.png" alt="Product Image">
-                                    </div>
-                                    <div class="product-info">
-                                        <a href="javascript:AlertDetail('@i');" class="product-title">缺缺 <span class="label label-success pull-right">@DateTime.Now.AddHours(1).ToShortTimeString()</span></a>
-                                        <span class="product-description">
-                                            请尽快完成今日的日程！
-                                        </span>
-                                    </div>
-                                </li><!-- /.item -->
-                            }
-                        </ul>
-                    </div><!-- /.box-body -->
-                    <div class="box-footer text-center" style="display: block;">
-                        <a href="javascript::;" class="uppercase">所有日程</a>
-                    </div><!-- /.box-footer -->
-                </div>
-
-            </div>
+            
         </div>
         <input type="text" id="Inverted" style="display:none" value="@ViewBag.Inverted" />
         <input type="text" id="Polar" style="display:none" value="@ViewBag.Polar" />

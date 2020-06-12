@@ -1,0 +1,102 @@
+﻿
+@{
+    ViewData["Title"] = "SigNalRChat";
+    
+}
+<div class="col-md-5" id="SignalRChatDiv" style="margin-top:32px">
+    <!-- 聊天 -->
+    <div class="box box-success direct-chat direct-chat-primary">
+        <div class="box-header with-border">
+            <h3 class="box-title"><i class="fa fa-weixin text-green"></i>在线聊天</h3>
+
+        </div><!-- /.box-header -->
+        <div class="box-body">
+            <!-- Conversations are loaded here -->
+            <div class="direct-chat-messages" id="MsgDiv">
+
+
+
+
+            </div><!-- /.box-body -->
+            <div class="box-footer">
+                <form action="#" method="post">
+                    <div class="input-group">
+                        <input type="text" name="Msg" id="Msg" placeholder="请输入消息 ..." class="form-control">
+                        <span class="input-group-btn">
+                            <button type="button" class="btn btn-primary btn-flat" id="SendBtn">Send</button>
+                        </span>
+                    </div>
+                </form>
+            </div><!-- /.box-footer-->
+        </div><!--/.direct-chat -->
+    </div>
+</div><!-- /.content-wrapper -->
+@section Scripts{
+    <script>
+        $(function () { //页面加载更改class
+            $("#LayoutBody").addClass("sidebar-collapse");
+            var token = $.cookie("token");
+
+            $.ajax({
+                url: baseUrl + '/api/Commons/chat',
+                type: 'get',
+                headers: { "Authorization": "Bearer " + token },
+                success: function (res) {
+                    $(res).each(function () {
+                        var line = '<div class="direct-chat-msg">'
+                            + '<div class="direct-chat-info clearfix">'
+                            + ' <span class="direct-chat-name pull-left">' + this.name + '</span>'
+                            + ' <span class="direct-chat-timestamp pull-right">' + this.sendTime + '</span>'
+                            + '</div><!-- /.direct-chat-info -->'
+                            + ' <img class="direct-chat-img" src="' + this.img + '" alt="message user image"> '
+                            + ' <div class="direct-chat-text">'
+                            + this.msg
+                            + '  </div> '
+                            + '   </div> ';
+
+                        $("#MsgDiv").append(line);
+                        var div = document.getElementById('MsgDiv');
+                        div.scrollTop = div.scrollHeight;
+                    });
+                },
+
+            }).fail(function () {
+
+            })
+
+        })
+        var connection = new signalR.HubConnectionBuilder().withUrl("https://localhost:44356/ChatHub").build();
+
+        connection.start();
+
+        $("#SendBtn").click(function () {
+
+
+            var user = $("#UserNameHeaderNav1").text();;
+            var message = $("#Msg").val();
+            var img = $("#UserImgHeaderNav1").prop('src');
+            console.log(user); console.log(message); console.log(img);
+            connection.invoke("SendMessage", user, message, img);
+        });
+
+
+        connection.on("MsgList", function (user, message, img, date) {
+
+            var line = '<div class="direct-chat-msg">'
+                + '<div class="direct-chat-info clearfix">'
+                + ' <span class="direct-chat-name pull-left">' + user + '</span>'
+                + ' <span class="direct-chat-timestamp pull-right">' + date + '</span>'
+                + '</div><!-- /.direct-chat-info -->'
+                + ' <img class="direct-chat-img" src="' + img + '" alt="message user image"> '
+                + ' <div class="direct-chat-text">'
+                + message
+                + '  </div> '
+                + '   </div> ';
+
+            $("#MsgDiv").append(line);
+            var div = document.getElementById('MsgDiv');
+            div.scrollTop = div.scrollHeight;
+
+        })
+    </script>
+} 
